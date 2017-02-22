@@ -3,6 +3,7 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 import exceptions.ArmurerieException;
+import ihm.SpaceInvadersFrame;
 import interfaces.IAptitude;
 import models.*;
 
@@ -21,6 +22,8 @@ public class SpaceInvaders {
 	 * @param args string array
 	 */
 	public static void main(String[] args) throws ArmurerieException {
+		new SpaceInvadersFrame();
+
 		// -- Initialisation basique
 		System.out.println("\n-------- INITIALISATION DU JEU ------------");
 
@@ -71,12 +74,12 @@ public class SpaceInvaders {
 		System.out.println("======================== TRI DES ARMES ===================================");
 		Armurerie.getInstance().trierListeArmesParDegatsMoyen();
 
-		IhmSpaceInvaders ihm = new IhmSpaceInvaders();
+		/*IhmSpaceInvaders ihm = new IhmSpaceInvaders();
 		ihm.createAndShowGUI(jeu);
 
 		Armurerie.getInstance().statistiques();
 
-		JMenuFrame gameFrame = new JMenuFrame(jeu);
+		JMenuFrame gameFrame = new JMenuFrame(jeu);*/
 
 	}
 	/**
