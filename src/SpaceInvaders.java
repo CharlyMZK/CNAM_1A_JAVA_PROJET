@@ -1,9 +1,8 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Scanner;
 
 import exceptions.ArmurerieException;
-import ihm.SpaceInvadersFrame;
+import ihm.ArcadeFrame;
 import interfaces.IAptitude;
 import models.*;
 
@@ -22,65 +21,16 @@ public class SpaceInvaders {
 	 * @param args string array
 	 */
 	public static void main(String[] args) throws ArmurerieException {
-		new SpaceInvadersFrame();
+		new ArcadeFrame();
 
 		// -- Initialisation basique
 		System.out.println("\n-------- INITIALISATION DU JEU ------------");
 
 		SpaceInvaders jeu = new SpaceInvaders();
-		//demoTP1(jeu);
-
-		// -- Partie 2
-		System.out.println("\n================================== [ RECAP AVANT LE DEBUT DU JEU ] =====================================\n");
-		// -- Affichage des ennemis
-		jeu.afficherEnnemis();
-		// -- Affichage du joueur
-		jeu.afficherLesJoueurs();
-		// -- Que le jeu commence !
-		int tour = 0;
-		// -- Tant qu'on est pas mort ou qu'il reste des ennemis on joue
-		/*while(jeu.getEnnemis().size() > 0 && !jeu.getJoueurs().get(0).getMonVaisseau().isDetruit()){
-			tour ++;
-			System.out.println("\n================================== [ DEBUT DU TOUR "+tour+" ] ===================================");
-			jouerTour(jeu);
-			System.out.println("===================================================================================================");
-		}*/
-		// -- Resultat du jeu
-		/*if(jeu.getEnnemis().size() == 0 && !jeu.getJoueurs().get(0).getMonVaisseau().isDetruit() ){
-			System.out.println("\n ============================== ### [ WOW YOU WIN SUCH POWER MUCH SKILLS SO NICE ] ### ========================================");
-		}else{
-			System.out.println("\n ============================== ### [ WOW YOU LOOSE SO BAD TRY AGAIN NOOB  ] ### ========================================");
-		}*/
-		Scanner sc = new Scanner(System.in);
-		String fichierEntree;
-
-		// -- Si il y a des args on prend les args sinon on demande a l'utilisateur
-		if(args.length > 0){
-			fichierEntree = args[0];
-			System.out.println("args : "+args[0]);
-		}else{
-			System.out.println("Bonjour, veuillez entrer le fichier de config des armes merci");
-			fichierEntree = sc.nextLine();
-		}
-
-		// -- Initialisation de la lsite noire
-		ArrayList<String> listeNoire = new ArrayList<String>();
-		listeNoire.add("bonjour");
-
-		ArmeImporteur ai = new ArmeImporteur(8,listeNoire,fichierEntree);
-		ai.generateArmes();
-		System.out.println("======================== AFFICHER LES ARMES ===================================");
-		Armurerie.getInstance().afficherLesArmes();
-		System.out.println("======================== TRI DES ARMES ===================================");
-		Armurerie.getInstance().trierListeArmesParDegatsMoyen();
-
-		/*IhmSpaceInvaders ihm = new IhmSpaceInvaders();
+		IhmSpaceInvaders ihm = new IhmSpaceInvaders();
 		ihm.createAndShowGUI(jeu);
-
 		Armurerie.getInstance().statistiques();
-
-		JMenuFrame gameFrame = new JMenuFrame(jeu);*/
-
+		JMenuFrame gameFrame = new JMenuFrame(jeu);
 	}
 	/**
 	 * Initialise le jeu en créeant des joueurs
@@ -105,6 +55,7 @@ public class SpaceInvaders {
 		ennemis.add(tardis);
 
 	}
+
 
 	/**
 	 * Joue un tour du jeu

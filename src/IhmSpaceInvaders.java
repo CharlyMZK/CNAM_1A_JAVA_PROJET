@@ -15,8 +15,6 @@ import javax.swing.*;
 
 public class IhmSpaceInvaders {
 
-
-
     public static void createAndShowGUI(SpaceInvaders jeu){
         JFrame frame = new JFrame("HelloWorldSwing");
         frame.setSize(500,500);

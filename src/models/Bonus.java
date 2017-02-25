@@ -1,17 +1,14 @@
-package ihm;
-
-import java.awt.event.KeyEvent;
-import java.util.Random;
+package models;
 
 import javax.swing.ImageIcon;
 
 
-public class Bonus extends Sprite implements Commons{
+public class Bonus extends Sprite implements Commons {
 
     private final int START_Y = 280;
     private int start_x = 270;
 
-    private final String boost = "../spacepix/boost.png";
+    private final String boost = "../assets/boost.png";
     private int width;
 
     public Bonus() {

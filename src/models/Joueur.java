@@ -3,12 +3,22 @@ package models;
 
 import exceptions.ArmurerieException;
 
-public class Joueur {
-	private final String nom; 
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+
+public class Joueur extends Sprite implements Commons {
+	private final String nom;
 	private final String prenom;
 	private String pseudo;
 	private Vaisseau monVaisseau;
-	
+
+	private final int START_Y = 280;
+	private final int START_X = 270;
+
+	private final String player = "../assets/player.png";
+	private int width;
+
+
 	/**
 	 * Constructeur de classe
 	 * @param nom du joueur
@@ -21,6 +31,13 @@ public class Joueur {
 		this.prenom = capitalizeName(prenom);
 		this.pseudo = pseudo;
 		this.monVaisseau = vaisseau;
+		ImageIcon ii = new ImageIcon(this.getClass().getResource(player));
+
+		width = ii.getImage().getWidth(null);
+
+		setImage(ii.getImage());
+		setX(START_X);
+		setY(START_Y);
 	}
 
 	/**
@@ -133,5 +150,42 @@ public class Joueur {
 
 	public String getPrenom() {
 		return prenom;
+	}
+
+
+	public void act() {
+		x += dx;
+		if (x <= 2)
+			x = 2;
+		if (x >= BOARD_WIDTH - 2*width)
+			x = BOARD_WIDTH - 2*width;
+	}
+
+	public void keyPressed(KeyEvent e) {
+		int key = e.getKeyCode();
+
+		if (key == KeyEvent.VK_LEFT)
+		{
+			dx = -2;
+		}
+
+		if (key == KeyEvent.VK_RIGHT)
+		{
+			dx = 2;
+		}
+	}
+
+	public void keyReleased(KeyEvent e) {
+		int key = e.getKeyCode();
+
+		if (key == KeyEvent.VK_LEFT)
+		{
+			dx = 0;
+		}
+
+		if (key == KeyEvent.VK_RIGHT)
+		{
+			dx = 0;
+		}
 	}
 }

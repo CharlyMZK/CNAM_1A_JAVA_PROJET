@@ -1,13 +1,16 @@
 package ihm;
 
+import models.Board;
+import models.Commons;
+
 import javax.swing.*;
 
 /**
  * Created by MZK on 21/02/2017.
  */
-public class SpaceInvadersFrame extends JFrame implements Commons{
+public class ArcadeFrame extends JFrame implements Commons {
 
-        public SpaceInvadersFrame()
+        public ArcadeFrame()
         {
             add(new Board());
             setTitle("Space Invaders");

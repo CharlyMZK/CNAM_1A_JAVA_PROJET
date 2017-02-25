@@ -1,4 +1,4 @@
-package ihm;
+package models;
 
 public interface Commons {
 

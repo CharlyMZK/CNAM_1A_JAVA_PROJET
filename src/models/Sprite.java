@@ -1,4 +1,4 @@
-package ihm;
+package models;
 
 import java.awt.Image;
 
@@ -23,7 +23,7 @@ public class Sprite {
         return visible;
     }
 
-    protected void setVisible(boolean visible) {
+    public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
