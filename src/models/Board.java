@@ -32,12 +32,11 @@ public class Board extends JPanel implements Runnable, Commons {
     private int alienY = 5;
     private int direction = -1;
     private int deaths = 0;
-
     private boolean ingame = true;
     private final String expl = "../assets/explosion.png";
     private final String playerShip = "../assets/player.png";
     private final String playerShooting = "../assets/playerShooting.png";
-    private final String alienpix = "../assets/alien.png";
+    private final String alienImage = "../assets/alien.png";
     private String message = "Game Over";
 
     private Thread animator;
@@ -63,7 +62,7 @@ public class Board extends JPanel implements Runnable, Commons {
 
         aliens = new ArrayList();
 
-        ImageIcon ii = new ImageIcon(this.getClass().getResource(alienpix));
+        ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage));
 
         for (int i=0; i < 4; i++) {
             for (int j=0; j < 6; j++) {
@@ -167,7 +166,7 @@ public class Board extends JPanel implements Runnable, Commons {
             drawShots(g);
             drawBombing(g);
             drawBonus(g);
-            System.out.println("Date : "+actualCalendar.get(Calendar.SECOND));
+
 
             if(actualCalendar.get(Calendar.SECOND) == 30 ){
                 bonus.setVisible(true);

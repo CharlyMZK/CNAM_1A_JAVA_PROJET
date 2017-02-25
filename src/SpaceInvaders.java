@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import exceptions.ArmurerieException;
-import ihm.ArcadeFrame;
 import interfaces.IAptitude;
 import models.*;
 

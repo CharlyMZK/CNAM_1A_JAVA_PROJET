@@ -1,5 +1,3 @@
-package ihm;
-
 import models.Board;
 import models.Commons;
 

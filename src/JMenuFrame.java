@@ -657,6 +657,8 @@ public class JMenuFrame extends JFrame{
         this.setVisible(true);
     }
 
+
+
     public void updateListPlayers(SpaceInvaders jeu){
         // -- Update de la liste
         DefaultListModel model = new DefaultListModel();
