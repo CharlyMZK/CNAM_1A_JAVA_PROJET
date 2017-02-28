@@ -8,10 +8,8 @@ public class ViperMKII extends Vaisseau{
      * Constructeur de classe
      */
     public ViperMKII() throws ArmurerieException {
-        super(10, 15 );
+        super(3, 0 );
         this.ajouterArme(Armurerie.getInstance().getUneArme(3), Armurerie.getInstance());
-        this.ajouterArme(Armurerie.getInstance().getUneArme(4), Armurerie.getInstance());
-        this.ajouterArme(Armurerie.getInstance().getUneArme(5), Armurerie.getInstance());
     }
 
     /**

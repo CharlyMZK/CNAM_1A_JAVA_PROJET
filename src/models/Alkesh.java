@@ -8,7 +8,7 @@ public class Alkesh extends Vaisseau{
      * Constructeur de classe
      */
     public Alkesh() throws ArmurerieException {
-        super(3, 5 );
+        super(1, 0);
         this.ajouterArme(Armurerie.getInstance().getUneArme(2), Armurerie.getInstance());
     }
 

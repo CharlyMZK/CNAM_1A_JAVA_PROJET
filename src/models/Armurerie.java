@@ -117,7 +117,7 @@ public final class Armurerie {
 		System.out.println("\n[Armurerie] init lancé");
 		Arme laser = new Arme("Laser",2,3,1,Type.Direct);
 		Arme lucile = new Arme("Hammer",1,8,1.5,Type.Explosif);
-		Arme missile = new Arme("Torpille",3,3,2,Type.Guide);
+		Arme missile = new Arme("Torpille",3,3,1,Type.Guide);
 		Arme mitrailleuse  = new Arme("mitrailleuse",2,3,1,Type.Direct);
 		Arme emg = new Arme("EMG",1,7,1.5,Type.Explosif);
 		Arme missileViper = new Arme("MissileViper",4,100,4,Type.Guide);

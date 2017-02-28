@@ -246,4 +246,5 @@ public abstract class Vaisseau {
 		return "Vaisseau : \nStructure max : "+pointsStructureMax+"\nBouclier max : "+pointsBouclierMax+"\nStructure actuel : "+pointsStructureActuel+"\nBouclier actuel : "+pointsBouclierActuel+" Le vaisseau est est détruit : "+detruit+"\nArmes : \n"+getInformationArmes()+"\n";
 	}
 
+
 }

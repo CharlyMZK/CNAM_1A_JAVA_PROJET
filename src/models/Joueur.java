@@ -12,8 +12,9 @@ public class Joueur extends Sprite implements Commons {
 	private String pseudo;
 	private Vaisseau monVaisseau;
 
-	private final int START_Y = 280;
-	private final int START_X = 270;
+	private final int START_Y = 850;
+	private final int START_X = 870;
+	private int moveSpeed = 5;
 
 	private final String player = "../assets/player.png";
 	private int width;
@@ -166,12 +167,12 @@ public class Joueur extends Sprite implements Commons {
 
 		if (key == KeyEvent.VK_LEFT)
 		{
-			dx = -2;
+			dx = -moveSpeed;
 		}
 
 		if (key == KeyEvent.VK_RIGHT)
 		{
-			dx = 2;
+			dx = moveSpeed;
 		}
 	}
 
@@ -187,5 +188,13 @@ public class Joueur extends Sprite implements Commons {
 		{
 			dx = 0;
 		}
+	}
+
+	public int getMoveSpeed() {
+		return moveSpeed;
+	}
+
+	public void setMoveSpeed(int moveSpeed) {
+		this.moveSpeed = moveSpeed;
 	}
 }

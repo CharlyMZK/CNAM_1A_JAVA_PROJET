@@ -3,29 +3,28 @@ package models;
 import javax.swing.*;
 
 /**
- * Created by MZK on 25/02/2017.
+ * Created by MZK on 28/02/2017.
  */
 
-
-public class Alien extends Sprite {
+public class Boss extends Sprite {
 
     private Bomb bomb;
-    private final String alien = "../assets/alien.png";
+    private final String boss = "../assets/boss.png";
     private Vaisseau vaisseau;
 
-    public Alien(int x, int y) {
+    public Boss(int x, int y) {
         this.x = x;
         this.y = y;
 
         bomb = new Bomb(x, y);
         try{
-            this.vaisseau = new Alkesh();
+            this.vaisseau = new Dart();
         }catch(Exception e){
         }
 
-        ImageIcon ii = new ImageIcon(this.getClass().getResource(alien));
+        ImageIcon ii = new ImageIcon(this.getClass().getResource(boss));
         setImage(ii.getImage());
-
+        this.setVisible(false);
     }
 
     public void act(int direction) {
