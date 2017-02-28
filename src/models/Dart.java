@@ -8,7 +8,7 @@ public class Dart extends Vaisseau {
      * Constructeur de classe
      */
     public Dart() throws ArmurerieException {
-        super(10, 3);
+        super(20, 15);
         this.ajouterArme(Armurerie.getInstance().getUneArme(0), Armurerie.getInstance());
     }
 

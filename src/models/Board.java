@@ -21,7 +21,17 @@ package models;
 
 
 public class Board extends JPanel implements Runnable, Commons {
+
+    // -- Dimensions
     private Dimension d;
+    private int alienX = 150;
+    private int alienY = 5;
+    private int direction = -5;
+    private int directionBoss = -5;
+    // -- End dimensions
+
+
+    // -- Sprites
     private ArrayList aliens;
     private Joueur joueur;
     private Boss boss;
@@ -29,27 +39,32 @@ public class Board extends JPanel implements Runnable, Commons {
     private Shot shot;
     private List<Shot> machineGun = new ArrayList<Shot> ();
     private List<Bomb> machineBomb = new ArrayList<Bomb> ();
+    // -- End sprites
+
+    // -- Variables
     private boolean machineGunUp = false;
-    private int alienX = 150;
-    private int alienY = 5;
-    private int direction = -5;
-    private int directionBoss = -5;
+    private String message = "Game Over";
+    private int alienSpeed = 5;
+    private int shootSpeed = 10;
+    private Thread animator;
     private int deaths = 0;
     private boolean ingame = true;
+    // -- End variables
+
+    // -- Images
     private final String expl = "../assets/explosion.png";
     private final String playerShip = "../assets/player.png";
     private final String playerShooting = "../assets/playerShooting.png";
     private final String alienImage = "../assets/alien.png";
     private final String vaisseauBaptiste = "../assets/vaisseauBaptiste.png";
     private final String vaisseauJordan = "../assets/alien_fun.png";
-    private String message = "Game Over";
-    private int alienSpeed = 5;
-    private int shootSpeed = 10;
-    private Thread animator;
+    // -- End images
 
+    /**
+     *  Constructor
+     */
     public Board()
     {
-
         addKeyListener(new TAdapter());
         setFocusable(true);
         d = new Dimension(BOARD_WIDTH, BOARD_HEIGTH);
@@ -59,19 +74,22 @@ public class Board extends JPanel implements Runnable, Commons {
         setDoubleBuffered(true);
     }
 
+    /**
+     * Add a notification
+     */
     public void addNotify() {
         super.addNotify();
         gameInit();
     }
 
+    /**
+     * Initalise le jeu
+     */
     public void gameInit() {
+        aliens = new ArrayList(); // -- Initialisation des aliens
+        ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
 
-        aliens = new ArrayList();
-
-
-
-        ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage));
-
+        // -- Creation des aliens
         for (int i=0; i < 4; i++) {
             for (int j=0; j < 6; j++) {
                 Alien alien = new Alien(alienX + 55*j, alienY + 55*i);
@@ -79,22 +97,35 @@ public class Board extends JPanel implements Runnable, Commons {
                 aliens.add(alien);
             }
         }
+
+        // -- Creation du joueur
         try {
             joueur = new Joueur("Skywalker", "luke", "bgdelespace", new ViperMKII());
         }catch(Exception e){
 
         }
+
+        // -- Creation du boss
+        boss = new Boss(200,20);
+        for(int i = 0; i <= 70 ; i++){
+            System.out.println("X : "+boss.getX()+(i*5));
+            machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
+        }
+        // -- Creation des autre sprites
         shot = new Shot();
         bonus = new Bonus();
-        boss = new Boss(200,20);
+
+        // -- Animation
         if (animator == null || !ingame) {
             animator = new Thread(this);
             animator.start();
         }
-
-
     }
 
+    /**
+     * Dessine les aliens
+     * @param g graphics
+     */
     public void drawAliens(Graphics g)
     {
         Iterator it = aliens.iterator();
@@ -112,6 +143,10 @@ public class Board extends JPanel implements Runnable, Commons {
         }
     }
 
+    /**
+     * Dessine le boss
+     * @param g graphics
+     */
     public void drawBoss(Graphics g)
     {
         if (boss.isVisible()) {
@@ -123,6 +158,10 @@ public class Board extends JPanel implements Runnable, Commons {
         }
     }
 
+    /**
+     * Dessine le joueur
+     * @param g graphics
+     */
     public void drawPlayer(Graphics g) {
 
         if (joueur.isVisible()) {
@@ -135,57 +174,90 @@ public class Board extends JPanel implements Runnable, Commons {
         }
     }
 
+    /**
+     * Dessine le laser tiré par le joueur
+     * @param g graphics
+     */
     public void drawShot(Graphics g) {
         if (shot.isVisible())
             g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
     }
+
+    /**
+     * Dessine les tirs créés par le bonus
+     * @param g graphics
+     */
     public void drawShots(Graphics g) {
         for(Shot shot : machineGun){
             if (shot.isVisible())
                 g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
         }
     }
+
+    /**
+     * Dessine les bombes des aliens
+     * @param g graphics
+     */
     public void drawBombing(Graphics g) {
+        Iterator alienIterator = aliens.iterator(); // -- Recupération de l'itérateur
 
-        Iterator i3 = aliens.iterator();
+        // -- Pour chaque alien, on dessine sa bombe
+        while (alienIterator.hasNext()) {
+            Alien a = (Alien) alienIterator.next(); // -- Get l'alien
+            Bomb b = a.getBomb();                   // -- Get la bombe
 
-        while (i3.hasNext()) {
-            Alien a = (Alien) i3.next();
-
-            Bomb b = a.getBomb();
-
+            // -- Si la bombe est toujours sur le terrain
             if (!b.isDestroyed()) {
                 g.drawImage(b.getImage(), b.getX(), b.getY(), this);
             }
         }
 
-        // -- Boss bomb
+        // -- Get la bombe du boss
         Bomb bossBomb = boss.getBomb();
         if (!bossBomb.isDestroyed()) {
             g.drawImage(bossBomb.getImage(), bossBomb.getX(), bossBomb.getY(), this);
         }
     }
 
+    /**
+     * Dessine les bombes des aliens
+     * @param g graphics
+     */
+    public void drawMachineBomb(Graphics g) {
+        // -- Get la bombe du boss
+        for(Bomb b : machineBomb){
+            if (!b.isDestroyed()) {
+                g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+            }
+        }
 
+    }
+    /**
+     * Dessine un bonus
+     * @param g graphics
+     */
     public void drawBonus(Graphics g) {
         if (bonus.isVisible()) {
             g.drawImage(bonus.getImage(), bonus.getX(), bonus.getY(), this);
         }
     }
 
+    /**
+     * Dessine le board
+     * @param g graphics
+     */
     public void paint(Graphics g)
     {
         super.paint(g);
-
+        // -- Couleur du fond
         g.setColor(Color.black);
         g.fillRect(0, 0, d.width, d.height);
         g.setColor(Color.green);
-
-        Date actualDate = new Date();
         Calendar actualCalendar =  Calendar.getInstance();
 
         if (ingame) {
 
+            // -- Dessin des sprites
             g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
             drawAliens(g);
             drawBoss(g);
@@ -193,25 +265,26 @@ public class Board extends JPanel implements Runnable, Commons {
             drawShot(g);
             drawShots(g);
             drawBombing(g);
+            drawMachineBomb(g);
             drawBonus(g);
 
-
-             if( (actualCalendar.get(Calendar.SECOND)%4)  == 0){
-                bonus.setVisible(true);
-             }
+            // -- Affichage periodique des bonus
+            if( (actualCalendar.get(Calendar.SECOND)%4)  == 0){
+               bonus.setVisible(true);
+            }
             if((actualCalendar.get(Calendar.SECOND)%8)  == 0){
                 bonus.die();
             }
-
         }
-
         Toolkit.getDefaultToolkit().sync();
         g.dispose();
     }
 
+    /**
+     * Affichage du Game over
+     */
     public void gameOver()
     {
-
         Graphics g = this.getGraphics();
 
         g.setColor(Color.black);
@@ -231,9 +304,45 @@ public class Board extends JPanel implements Runnable, Commons {
                 BOARD_WIDTH/2);
     }
 
-    public void animationCycle() {
+    /**
+     * Lance l'effet du bonus recupéré
+     * @param playerX cooroonnées
+     * @param playerY cooroonnées
+     */
+    public void lancerEffetBonus(int playerX, int playerY){
+        if(bonus.getMode() == 1){
+            ImageIcon ii = new ImageIcon(getClass().getResource(expl));
+            joueur.setImage(ii.getImage());
 
+            playerX = playerX - 30;
+            for(int i = 0; i <= 50 ; i++){
+                machineGun.add(new Shot(playerX+(i*5),playerY));
+            }
+        }
+        if(bonus.getMode() == 2){
+            Iterator it = aliens.iterator();
+            while (it.hasNext()) {
+                Alien alien = (Alien) it.next();
+                ImageIcon ii =
+                        new ImageIcon(getClass().getResource(vaisseauJordan));
+                alien.setImage(ii.getImage());
+                alienSpeed = 10;
+            }
+        }
+        if(bonus.getMode() == 3){
+            ImageIcon ii = new ImageIcon(getClass().getResource(vaisseauBaptiste));
+            joueur.setImage(ii.getImage());
+            shootSpeed = shootSpeed * 2;
+            joueur.setMoveSpeed(joueur.getMoveSpeed()+3);
+        }
+        bonus.die();
+        bonus = new Bonus();
+    }
 
+    /**
+     * On verifie si le jeu est fini
+     */
+    public void verificationFinJeu(){
         Iterator alienDeadIterator = aliens.iterator();
         int deadCounter=0;
         while (alienDeadIterator.hasNext()) {
@@ -253,212 +362,105 @@ public class Board extends JPanel implements Runnable, Commons {
             ingame = false;
             message = "Game won!";
         }
+    }
 
-        // player
+    /**
+     * On verifie si l'alien est touché par un laser
+     * @param s le laser
+     */
+    public void verificationAlienTouche(Shot s){
+        Iterator it = aliens.iterator();
+        int shotX = s.getX();
+        int shotY = s.getY();
 
-        joueur.act();
+        while (it.hasNext()) {
+            Alien alien = (Alien) it.next();
+            int alienX = alien.getX();
+            int alienY = alien.getY();
 
-        // bonus
-        if (bonus.isVisible()) {
-            int bonusX = bonus.getX();
-            int bonuxY = bonus.getY();
-            int playerX = joueur.getX();
-            int playerY = joueur.getY();
-
-            if (bonus.isVisible() && joueur.isVisible()) {
-                if (bonusX >= (playerX) &&
-                        bonusX <= (playerX + PLAYER_WIDTH) &&
-                        bonuxY >= (playerY) &&
-                        bonuxY <= (playerY+PLAYER_HEIGHT) ) {
-
-
-                    if(bonus.getMode() == 1){
-                        ImageIcon ii = new ImageIcon(getClass().getResource(expl));
-                        joueur.setImage(ii.getImage());
-
-                        playerX = playerX - 30;
-                        for(int i = 0; i <= 50 ; i++){
-                            machineGun.add(new Shot(playerX+(i*5),playerY));
-                        }
-                    }
-                    if(bonus.getMode() == 2){
-                        Iterator it = aliens.iterator();
-                        while (it.hasNext()) {
-                            Alien alien = (Alien) it.next();
-                            ImageIcon ii =
-                                    new ImageIcon(getClass().getResource(vaisseauJordan));
-                            alien.setImage(ii.getImage());
-                            alienSpeed = 5;
-                        }
-                    }
-                    if(bonus.getMode() == 3){
-                        ImageIcon ii = new ImageIcon(getClass().getResource(vaisseauBaptiste));
-                        joueur.setImage(ii.getImage());
-                        shootSpeed = shootSpeed * 2;
-                        joueur.setMoveSpeed(joueur.getMoveSpeed()+3);
-                    }
-                    bonus.die();
-                    bonus = new Bonus();
-
-
+            if (alien.isVisible() && s.isVisible()) {
+                if (shotX >= (alienX) &&
+                        shotX <= (alienX + ALIEN_WIDTH) &&
+                        shotY >= (alienY) &&
+                        shotY <= (alienY+ALIEN_HEIGHT) ) {
+                    ImageIcon ii =
+                            new ImageIcon(getClass().getResource(expl));
+                    alien.setImage(ii.getImage());
+                    alien.setDying(true);
+                    deaths++;
+                    shot.die();
                 }
             }
         }
 
-        if(machineGun.size() > 0){
-            for(Shot s : machineGun){
+        int y = s.getY();
+        y -=     10;
 
-
-                if (s.isVisible()) {
-                    Iterator it = aliens.iterator();
-                    int shotX = s.getX();
-                    int shotY = s.getY();
-
-                    while (it.hasNext()) {
-                        Alien alien = (Alien) it.next();
-                        int alienX = alien.getX();
-                        int alienY = alien.getY();
-
-                        if (alien.isVisible() && s.isVisible()) {
-                            if (shotX >= (alienX) &&
-                                    shotX <= (alienX + ALIEN_WIDTH) &&
-                                    shotY >= (alienY) &&
-                                    shotY <= (alienY+ALIEN_HEIGHT) ) {
-                                ImageIcon ii =
-                                        new ImageIcon(getClass().getResource(expl));
-                                alien.setImage(ii.getImage());
-                                alien.setDying(true);
-                                deaths++;
-                                shot.die();
-                            }
-                        }
-                    }
-
-                    int y = s.getY();
-                    y -=     10;
-
-                    if(y < 650){
-                        ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
-                        joueur.setImage(ii.getImage());
-
-                    }
-
-                    if (y < 0){
-                        s.die();
-
-                    }
-                    else s.setY(y);
-                }
-            }
+        if(y < 650){
+            ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
+            joueur.setImage(ii.getImage());
 
         }
 
-        // shot
-        if (shot.isVisible()) {
+        if (y < 0){
+            s.die();
 
-            Iterator it = aliens.iterator();
-            int shotX = shot.getX();
-            int shotY = shot.getY();
+        }
+        else s.setY(y);
+    }
 
-            while (it.hasNext()) {
-                Alien alien = (Alien) it.next();
-                int alienX = alien.getX();
-                int alienY = alien.getY();
-
-                if (alien.isVisible() && shot.isVisible()) {
-                    if (shotX >= (alienX) &&
-                            shotX <= (alienX + ALIEN_WIDTH) &&
-                            shotY >= (alienY) &&
-                            shotY <= (alienY+ALIEN_HEIGHT) ) {
-
-
-                        // -- Comptage des points de vie
-                        System.out.println("// ------------------------------");
-                        System.out.println("// -- Vie de l'alien avant : ");
-                        System.out.println(alien.getVaisseau().getPointsBouclierActuel());
-                        System.out.println(alien.getVaisseau().getPointsStructureActuel());
-                        joueur.getMonVaisseau().attaque(alien.getVaisseau());
-                        System.out.println("// -- Vie de l'alien apres : ");
-                        System.out.println(alien.getVaisseau().getPointsBouclierActuel());
-                        System.out.println(alien.getVaisseau().getPointsStructureActuel());
-                        System.out.println("Il est mort : "+alien.getVaisseau().isDetruit());
-                        System.out.println("// ------------------------------");
-                        // --
-                        if(alien.getVaisseau().isDetruit()){
-
-                            ImageIcon ii =
-                                    new ImageIcon(getClass().getResource(expl));
-                            alien.setImage(ii.getImage());
-
-                            alien.setDying(true);
-                            deaths++;
-
-                        }
-                        shot.die();
-                    }
-                }
-            }
-
-            if(boss.isVisible() && shot.isVisible()){
-                int bossX = boss.getX();
-                int bossY = boss.getY();
-                    if (shotX >= (bossX) &&
-                            shotX <= (bossX + BOSS_WIDTH) &&
-                            shotY >= (bossY) &&
-                            shotY <= (bossY+BOSS_HEIGHT) ) {
+    /**
+     * On verifie si le boss est touché par un laser
+     * @param s le laser
+     */
+    public void verificationBossTouche(Shot s){
+        int shotX = s.getX();
+        int shotY = s.getY();
+        int bossX = boss.getX();
+        int bossY = boss.getY();
+        if (shotX >= (bossX) &&
+                shotX <= (bossX + BOSS_WIDTH) &&
+                shotY >= (bossY) &&
+                shotY <= (bossY+BOSS_HEIGHT) ) {
 
 
-                        // -- Comptage des points de vie
-                        System.out.println("// ------------------------------");
-                        System.out.println("// -- Vie du boss avant : ");
-                        System.out.println(boss.getVaisseau().getPointsBouclierActuel());
-                        System.out.println(boss.getVaisseau().getPointsStructureActuel());
-                        joueur.getMonVaisseau().attaque(boss.getVaisseau());
-                        System.out.println("// -- Vie de l'alien apres : ");
-                        System.out.println(boss.getVaisseau().getPointsBouclierActuel());
-                        System.out.println(boss.getVaisseau().getPointsStructureActuel());
-                        System.out.println("Il est mort : "+boss.getVaisseau().isDetruit());
-                        System.out.println("// ------------------------------");
-                        // --
-                        if(boss.getVaisseau().isDetruit()){
+            // -- Comptage des points de vie
+            System.out.println("// ------------------------------");
+            System.out.println("// -- Vie du boss avant : ");
+            System.out.println(boss.getVaisseau().getPointsBouclierActuel());
+            System.out.println(boss.getVaisseau().getPointsStructureActuel());
+            joueur.getMonVaisseau().attaque(boss.getVaisseau());
+            System.out.println("// -- Vie de l'alien apres : ");
+            System.out.println(boss.getVaisseau().getPointsBouclierActuel());
+            System.out.println(boss.getVaisseau().getPointsStructureActuel());
+            System.out.println("Il est mort : "+boss.getVaisseau().isDetruit());
+            System.out.println("// ------------------------------");
+            // --
+            if(boss.getVaisseau().isDetruit()){
 
-                            ImageIcon ii =
-                                    new ImageIcon(getClass().getResource(expl));
-                            boss.setImage(ii.getImage());
+                ImageIcon ii =
+                        new ImageIcon(getClass().getResource(expl));
+                boss.setImage(ii.getImage());
 
-                            boss.setDying(true);
-                            deaths++;
-
-                        }
-                        shot.die();
-                    }
+                boss.setDying(true);
+                deaths++;
 
             }
-
-
-            int y = shot.getY();
-            y -= shootSpeed;
-
-            /*if(y < 650){
-                ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
-                joueur.setImage(ii.getImage());
-
-            }*/
-
-            if (y < 0){
-                shot.die();
-            }
-            else shot.setY(y);
+            shot.die();
         }
 
-        // -- DEPLACEMENT ALIENS
+    }
 
-        Iterator it1 = aliens.iterator();
+    /**
+     * On verifie si l'alien touche le bord
+     */
+    public void verificationAlienCollision(){
+        Iterator aliensMouvementIterator = aliens.iterator();
 
-        while (it1.hasNext()) {
-           Alien a1 = (Alien) it1.next();
-            int x = a1.getX();
-
+        while (aliensMouvementIterator.hasNext()) {
+            Alien alien = (Alien) aliensMouvementIterator.next();
+            int x = alien.getX();
+            // -- Si l'alien touche le bord il descend
             if (x  >= BOARD_WIDTH - BORDER_RIGHT && direction != -alienSpeed) {
                 direction = -alienSpeed;
                 Iterator i1 = aliens.iterator();
@@ -467,7 +469,7 @@ public class Board extends JPanel implements Runnable, Commons {
                     a2.setY(a2.getY() + GO_DOWN);
                 }
             }
-
+            // -- Si l'alien touche le bord il descend
             if (x <= BORDER_LEFT && direction != alienSpeed) {
                 direction = alienSpeed;
 
@@ -477,53 +479,90 @@ public class Board extends JPanel implements Runnable, Commons {
                     a.setY(a.getY() + GO_DOWN);
                 }
             }
+
+
+        }
+    }
+
+    /**
+     * On verifie si le boss touche le bord
+     */
+    public void verificationBossCollision(){
+        int x = boss.getX();
+
+        if (x  >= BOARD_WIDTH - BORDER_RIGHT && directionBoss != -5) {
+            directionBoss = -5;
+            boss.setY(boss.getY() + GO_DOWN);
+
         }
 
+        if (x <= BORDER_LEFT && directionBoss != 5) {
+            directionBoss = 5;
+            boss.setY(boss.getY() + GO_DOWN);
+        }
+    }
 
-        Iterator it = aliens.iterator();
+    /**
+     * Les aliens avancent
+     */
+    public void lancerInvasion(){
 
-        while (it.hasNext()) {
-            Alien alien = (Alien) it.next();
+        Iterator alienInvasionIterator = aliens.iterator();
+        // -- Pour chaque alien
+        while (alienInvasionIterator.hasNext()) {
+            Alien alien = (Alien) alienInvasionIterator.next();
             if (alien.isVisible()) {
 
+                // -- On verifie si il a envahi
                 int y = alien.getY();
-
                 if (y > GROUND - ALIEN_HEIGHT) {
                     ingame = false;
                     message = "Invasion!";
                 }
 
+                // -- Sinon il bouge
                 alien.act(direction);
             }
         }
+    }
 
-        // --
+    /**
+     * Le boss avance
+     */
+    public void lancerBossInvasion(){
+        // -- On verifie si il a envahi
+        int y = boss.getY();
+        if (y > GROUND - BOSS_HEIGHT) {
+            ingame = false;
+            message = "Invasion!";
+        }
+        boss.act(directionBoss);
+    }
 
-        // -- DEPLACEMENT BOSS
-        if(boss.isVisible()){
-            int x = boss.getX();
-
-            if (x  >= BOARD_WIDTH - BORDER_RIGHT && directionBoss != -5) {
-                directionBoss = -5;
-                boss.setY(boss.getY() + GO_DOWN);
-
+    /**
+     * Le boss tire une bombe
+     */
+    public void bossTirerBombe(){
+        Boolean bombesDetruites = true;
+        for(Bomb b : machineBomb){
+            if(!b.isDestroyed()){
+                bombesDetruites = false;
             }
-
-            if (x <= BORDER_LEFT && directionBoss != 5) {
-                directionBoss = 5;
-                boss.setY(boss.getY() + GO_DOWN);
+        }
+        if(bombesDetruites){
+            machineBomb.clear();
+            for(int i = 0; i <= 70 ; i++){
+                System.out.println("X : "+boss.getX()+(i*5));
+                machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
             }
+        }
 
-            boss.act(directionBoss);
 
 
-            Bomb b = boss.getBomb();
-            System.out.println("BOMB NORMALE");
+
+        for(Bomb b : machineBomb){
             if (boss.isVisible() && b.isDestroyed()) {
-                System.out.println(boss.getX()+" - "+boss.getY());
                 b.setDestroyed(false);
-                b.setX(boss.getX());
-                b.setY(boss.getY()+200);
             }
             int bombX = b.getX();
             int bombY = b.getY();
@@ -531,61 +570,41 @@ public class Board extends JPanel implements Runnable, Commons {
             int playerY = joueur.getY();
 
             if (joueur.isVisible() && !b.isDestroyed()) {
-                System.out.println(bombX+" - "+bombY);
-                if ( bombX >= (playerX) &&
-                        bombX <= (playerX+PLAYER_WIDTH) &&
-                        bombY >= (playerY) &&
-                        bombY <= (playerY+PLAYER_HEIGHT) ) {
+
+                if ( bombX >= (playerX) && bombX <= (playerX+PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY+PLAYER_HEIGHT) ) {
 
                     // -- Comptage des points de vie
-                    System.out.println("// ------------------------------");
-                    System.out.println("// -- Vie de l'alien avant : ");
-                    System.out.println(joueur.getMonVaisseau().getPointsBouclierActuel());
-                    System.out.println(joueur.getMonVaisseau().getPointsStructureActuel());
                     boss.getVaisseau().attaque(joueur.getMonVaisseau());
-                    System.out.println("// -- Vie de l'alien apres : ");
-                    System.out.println(joueur.getMonVaisseau().getPointsBouclierActuel());
-                    System.out.println(joueur.getMonVaisseau().getPointsStructureActuel());
-                    System.out.println("Il est mort : "+joueur.getMonVaisseau().isDetruit());
-                    System.out.println("// ------------------------------");
-                    // --
+
                     if(joueur.getMonVaisseau().isDetruit()){
-
-
-                        ImageIcon ii =
-                                new ImageIcon(this.getClass().getResource(expl));
+                        ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
-
-
                     }
-
-
-
                     b.setDestroyed(true);
                 }
             }
 
+            // -- La bombe bouge
             if (!b.isDestroyed()) {
                 b.setY(b.getY() + 15);
                 if (b.getY() >= GROUND - BOMB_HEIGHT) {
                     b.setDestroyed(true);
                 }
             }
-
         }
+    }
 
-
-        // --
-
-        // bombs
-
-        Iterator i3 = aliens.iterator();
+    /**
+     * Les aliens tire leurs bombes
+     */
+    public void alienTirerBombe(){
+        Iterator alienIterator = aliens.iterator();
         Random generator = new Random();
 
-        while (i3.hasNext()) {
+        while (alienIterator.hasNext()) {
             int shot = generator.nextInt(15);
-            Alien a = (Alien) i3.next();
+            Alien a = (Alien) alienIterator.next();
             Bomb b = a.getBomb();
             if (shot == CHANCE && a.isVisible() && b.isDestroyed()) {
 
@@ -605,10 +624,6 @@ public class Board extends JPanel implements Runnable, Commons {
                         bombY >= (playerY) &&
                         bombY <= (playerY+PLAYER_HEIGHT) ) {
 
-
-
-
-
                     // -- Comptage des points de vie
                     System.out.println("// ------------------------------");
                     System.out.println("// -- Vie de l'alien avant : ");
@@ -622,18 +637,10 @@ public class Board extends JPanel implements Runnable, Commons {
                     System.out.println("// ------------------------------");
                     // --
                     if(joueur.getMonVaisseau().isDetruit()){
-
-
-                        ImageIcon ii =
-                                new ImageIcon(this.getClass().getResource(expl));
+                        ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
-
-
                     }
-
-
-
                     b.setDestroyed(true);
                 }
             }
@@ -647,19 +654,97 @@ public class Board extends JPanel implements Runnable, Commons {
         }
     }
 
+    /**
+     * Le joueur tire un laser
+     */
+    public void joueurTirerLaser(){
+        // -- Si on a hit le bonus machineGun, on verifie si les aliens sont touchés par nos lasers
+        if(machineGun.size() > 0){
+            for(Shot s : machineGun){
+                if (s.isVisible()) {
+                    verificationAlienTouche(s);
+                }
+            }
+
+        }
+
+        // Traitement du tir du joueur
+        if (shot.isVisible()) {
+            verificationAlienTouche(shot);
+            if(boss.isVisible()){
+                verificationBossTouche(shot);
+            }
+            shot.move(shootSpeed);
+        }
+    }
+    /**
+     * Cycle periodique de l'animation en jeu
+     */
+    public void animationCycle() {
+
+        // -- On verifie si le jeu est fini
+        verificationFinJeu();
+        // -- Sinon
+
+        // -- Le joueur joue
+        joueur.act();
+
+        // -- Si le bonus est visible : traitement du bonus
+        if (bonus.isVisible()) {
+            int bonusX = bonus.getX();
+            int bonuxY = bonus.getY();
+            int playerX = joueur.getX();
+            int playerY = joueur.getY();
+
+            if (bonus.isVisible() && joueur.isVisible()) {
+                if (bonusX >= (playerX) && bonusX <= (playerX + PLAYER_WIDTH) && bonuxY >= (playerY) && bonuxY <= (playerY+PLAYER_HEIGHT) ) {
+                    lancerEffetBonus(playerX,playerY);
+                }
+            }
+        }
+
+        // -- Le joueur tire
+        joueurTirerLaser();
+
+        // -- DEPLACEMENT ALIENS
+
+        // -- Si l'alien touche le bord on le descend
+        verificationAlienCollision();
+
+        // -- Deplace tout les aliens s'ils n'ont pas envahi le joueur
+        lancerInvasion();
+
+        // -- Chaque alien tire une bombe
+        alienTirerBombe();
+
+        // -- FIN DEPLACEMENT ALIENS
+
+        // -- DEPLACEMENT BOSS
+        if(boss.isVisible()){
+            verificationBossCollision(); // -- On verifie si il touche le bord
+            lancerBossInvasion();        // -- On déplace le boss
+            bossTirerBombe();            // -- Il tire une bombe
+        }
+        // -- FIN DEPLACEMENT BOSS
+
+
+    }
+
+    /**
+     * Run du thread
+     */
     public void run() {
-
         long beforeTime, timeDiff, sleep;
-
         beforeTime = System.currentTimeMillis();
-
+        // -- Pendant le jeu
         while (ingame) {
+            // -- On redessine le board
             repaint();
+            // -- Relance l'animation
             animationCycle();
-
+            // -- Sleep
             timeDiff = System.currentTimeMillis() - beforeTime;
             sleep = DELAY - timeDiff;
-
             if (sleep < 0)
                 sleep = 2;
             try {
@@ -672,6 +757,9 @@ public class Board extends JPanel implements Runnable, Commons {
         gameOver();
     }
 
+    /**
+     * Key pressed par le joueur
+     */
     private class TAdapter extends KeyAdapter {
 
         public void keyReleased(KeyEvent e) {
@@ -687,14 +775,13 @@ public class Board extends JPanel implements Runnable, Commons {
 
             if (ingame)
             {
+                // -- Si on press la fleche du haut : tir
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    /*ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShooting));
-                    joueur.setImage(ii.getImage());*/
-
                     if (!shot.isVisible())
                         shot = new Shot(x, y);
 
                 }
+                // -- Fleche du bas : tue tout les aliens
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     Iterator it = aliens.iterator();
 
@@ -705,6 +792,9 @@ public class Board extends JPanel implements Runnable, Commons {
                         boss.setVisible(true);
                     }
 
+                }
+                if (e.getKeyCode() == KeyEvent.VK_ALT) {
+                    gameInit();
                 }
             }
         }

@@ -21,4 +21,14 @@ public class Shot extends Sprite {
         setX(x + H_SPACE);
         setY(y - V_SPACE);
     }
+
+    public void move(int distance){
+        int y = this.getY();
+        y -= distance;
+
+        if (y < 0){
+            this.die();
+        }
+        else this.setY(y);
+    }
 }
