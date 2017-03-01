@@ -23,13 +23,13 @@ public class SpaceInvaders {
 		new ArcadeFrame();
 
 		// -- Initialisation basique
-		System.out.println("\n-------- INITIALISATION DU JEU ------------");
+		/*System.out.println("\n-------- INITIALISATION DU JEU ------------");
 
 		SpaceInvaders jeu = new SpaceInvaders();
 		IhmSpaceInvaders ihm = new IhmSpaceInvaders();
 		ihm.createAndShowGUI(jeu);
-		Armurerie.getInstance().statistiques();
-		JMenuFrame gameFrame = new JMenuFrame(jeu);
+		//Armurerie.getInstance().statistiques();
+		JMenuFrame gameFrame = new JMenuFrame(jeu);*/
 	}
 	/**
 	 * Initialise le jeu en créeant des joueurs

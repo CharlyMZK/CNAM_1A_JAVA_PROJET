@@ -45,6 +45,11 @@ public class Board extends JPanel implements Runnable, Commons {
     private int deaths = 0;
     private boolean ingame = true;
     private boolean isBaptiste = false;
+    private boolean bannerVisible = true;
+    private boolean hautFaitVisible = true;
+    private int niveauActuel = 1;
+    private Calendar hautFaitCalendar = Calendar.getInstance();
+    private Calendar niveauCalendar = Calendar.getInstance();
     // -- End variables
 
     // -- Images
@@ -55,15 +60,15 @@ public class Board extends JPanel implements Runnable, Commons {
     private final String vaisseauBaptiste = "../assets/vaisseauBaptiste.png";
     private final String vaisseauJordan = "../assets/alien_fun.png";
     private final String fond = "../assets/fond.png";
+    private String hautfait = "../assets/premierePartieAchievement.png";
     private ImageIcon imageFond = null;
-
+    private ImageIcon imageHautfait = null;
     // -- End images
 
     /**
      *  Constructor
      */
-    public Board()
-    {
+    public Board(){
         addKeyListener(new TAdapter());
         setFocusable(true);
         d = new Dimension(BOARD_WIDTH, BOARD_HEIGTH);
@@ -87,8 +92,9 @@ public class Board extends JPanel implements Runnable, Commons {
         aliens = new ArrayList(); // -- Initialisation des aliens
         ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
         imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
+        imageHautfait = new ImageIcon(this.getClass().getResource(hautfait)); // -- Image du haut fait
         // -- Creation des aliens
-        for (int i=0; i < 4; i++) {
+        for (int i=0; i < (niveauActuel*2); i++) {
             for (int j=0; j < 6; j++) {
                 Alien alien = new Alien(alienX + 55*j, alienY + 55*i);
                 alien.setImage(ii.getImage());
@@ -106,7 +112,6 @@ public class Board extends JPanel implements Runnable, Commons {
         // -- Creation du boss
         boss = new Boss(200,-500);
         for(int i = 0; i <= 70 ; i++){
-            System.out.println("X : "+boss.getX()+(i*5));
             machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
         }
         // -- Creation des autre sprites
@@ -121,11 +126,29 @@ public class Board extends JPanel implements Runnable, Commons {
     }
 
     /**
+     * Dessine une banniere
+     * @param g graphics
+     */
+    public void drawBanner(Graphics g){
+        g.setColor(new Color(0, 32, 48));
+        g.fillRect(400, BOARD_WIDTH/2 - 30, 140, 50);
+        g.setColor(Color.white);
+        g.drawRect(400, BOARD_WIDTH/2 - 30, 140, 50);
+
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        FontMetrics metr = this.getFontMetrics(small);
+
+        g.setColor(Color.white);
+        g.setFont(small);
+        g.drawString("Niveau "+niveauActuel, (BOARD_WIDTH - metr.stringWidth(message))/2, BOARD_WIDTH/2);
+
+    }
+
+    /**
      * Dessine les aliens
      * @param g graphics
      */
-    public void drawAliens(Graphics g)
-    {
+    public void drawAliens(Graphics g){
         Iterator it = aliens.iterator();
 
         while (it.hasNext()) {
@@ -145,8 +168,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Dessine le boss
      * @param g graphics
      */
-    public void drawBoss(Graphics g)
-    {
+    public void drawBoss(Graphics g){
         if (boss.isVisible()) {
             g.drawImage(boss.getImage(), boss.getX(), boss.getY(), this);
         }
@@ -229,12 +251,13 @@ public class Board extends JPanel implements Runnable, Commons {
      */
     public void drawMachineBomb(Graphics g) {
         // -- Get la bombe du boss
-        for(Bomb b : machineBomb){
-            if (!b.isDestroyed()) {
-                g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+        if(boss.isVisible()){
+            for(Bomb b : machineBomb){
+                if (!b.isDestroyed()) {
+                    g.drawImage(b.getImage(), b.getX(), b.getY(), this);
+                }
             }
         }
-
     }
     /**
      * Dessine un bonus
@@ -245,13 +268,20 @@ public class Board extends JPanel implements Runnable, Commons {
             g.drawImage(bonus.getImage(), bonus.getX(), bonus.getY(), this);
         }
     }
-
+    /**
+     * Dessine un hautfait
+     * @param g graphics
+     */
+    public void drawHautFait(Graphics g) {
+        if (hautFaitVisible) {
+            g.drawImage(imageHautfait.getImage(),BOARD_WIDTH-200, 20, this);
+        }
+    }
     /**
      * Dessine le board
      * @param g graphics
      */
-    public void paint(Graphics g)
-    {
+    public void paint(Graphics g){
         super.paint(g);
         // -- Couleur du fond
         g.setColor(Color.black);
@@ -265,6 +295,21 @@ public class Board extends JPanel implements Runnable, Commons {
             // -- Dessin des sprites
             g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
             drawAliens(g);
+            Date actualDate = new Date();
+            System.out.println();
+            if(bannerVisible){
+                drawBanner(g);
+                if( ( (actualDate.getTime()-hautFaitCalendar.getTime().getTime()) / 1000) == 2){
+                    bannerVisible = false;
+                }
+            }
+            if(hautFaitVisible){
+                drawHautFait(g);
+                if( ( (actualDate.getTime()-niveauCalendar.getTime().getTime()) / 1000) == 3){
+                    hautFaitVisible = false;
+                }
+            }
+
             drawBoss(g);
             drawPlayer(g);
             drawShot(g);
@@ -288,28 +333,7 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Affichage du Game over
      */
-    public void gameOver()
-    {
-        Graphics g = this.getGraphics();
-
-        g.setColor(Color.black);
-        g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGTH);
-
-        g.setColor(new Color(0, 32, 48));
-        g.fillRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
-        g.setColor(Color.white);
-        g.drawRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
-
-        Font small = new Font("Helvetica", Font.BOLD, 14);
-        FontMetrics metr = this.getFontMetrics(small);
-
-        g.setColor(Color.white);
-        g.setFont(small);
-        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message))/2,
-                BOARD_WIDTH/2);
-    }
-
-    public void printMessage(String message){
+    public void gameOver(){
         Graphics g = this.getGraphics();
 
         g.setColor(Color.black);
@@ -379,15 +403,27 @@ public class Board extends JPanel implements Runnable, Commons {
             }
         }
 
-        if (deadCounter == NUMBER_OF_ALIENS_TO_DESTROY){
+        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY*niveauActuel)){
             System.out.println("BOSS APPEARS");
             boss.setVisible(true);
         }
 
-        if (deadCounter == NUMBER_OF_ALIENS_TO_DESTROY && boss.isDying()) {
+        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY*niveauActuel) && boss.isDying()) {
             System.out.println("WIN");
-            ingame = false;
-            message = "Game won!";
+
+            if(niveauActuel == 7 ){
+                ingame = false;
+                message = "Game won!";
+            }else{
+                niveauActuel++;
+                hautfait = "../assets/niveau"+niveauActuel+"Achievement.png";
+                hautFaitVisible = true;
+                Date dateActuelle = new Date();
+                hautFaitCalendar.setTime(dateActuelle);
+                bannerVisible = true;
+                niveauCalendar.setTime(dateActuelle);
+                gameInit();
+            }
         }
     }
 
@@ -473,14 +509,14 @@ public class Board extends JPanel implements Runnable, Commons {
             System.out.println("// ------------------------------");
             // --
             if(boss.getVaisseau().isDetruit()){
-
-                ImageIcon ii =
-                        new ImageIcon(getClass().getResource(expl));
+                ImageIcon ii = new ImageIcon(getClass().getResource(expl));
                 boss.setImage(ii.getImage());
-
                 boss.setDying(true);
                 deaths++;
-
+                for(Bomb b : machineBomb){
+                    b.setDying(true);
+                }
+                machineBomb.clear();
             }
             shot.die();
         }
@@ -568,7 +604,6 @@ public class Board extends JPanel implements Runnable, Commons {
     public void lancerBossInvasion(){
         // -- On verifie si il a envahi
         int y = boss.getY();
-        System.out.println("Boss : "+y);
         if(y < 10){
             boss.setY(boss.getY()+3);
         }
@@ -592,7 +627,6 @@ public class Board extends JPanel implements Runnable, Commons {
         if(bombesDetruites){
             machineBomb.clear();
             for(int i = 0; i <= 70 ; i++){
-                System.out.println("X : "+boss.getX()+(i*5));
                 machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
             }
         }
@@ -827,13 +861,18 @@ public class Board extends JPanel implements Runnable, Commons {
 
                     while (it.hasNext()) {
                         Alien alien = (Alien) it.next();
+                        alien.setDying(true);
                         alien.die();
                         deaths++;
                         boss.setVisible(true);
+                        boss.setDying(true);
+                        boss.die();
                     }
 
                 }
+
                 if (e.getKeyCode() == KeyEvent.VK_ALT) {
+                    System.out.println("reset");
                     gameInit();
                 }
             }

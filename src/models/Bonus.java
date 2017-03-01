@@ -16,7 +16,6 @@ public class Bonus extends Sprite implements Commons {
 
         Random generator = new Random();
         int rand = generator.nextInt(3);
-        System.out.println("Rand : "+rand);
 
         if(rand == 0){
             boost = "../assets/boost.png";
