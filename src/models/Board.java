@@ -1,11 +1,6 @@
 package models;
 
-        import java.awt.Color;
-        import java.awt.Dimension;
-        import java.awt.Font;
-        import java.awt.FontMetrics;
-        import java.awt.Graphics;
-        import java.awt.Toolkit;
+        import java.awt.*;
         import java.awt.event.KeyAdapter;
         import java.awt.event.KeyEvent;
 
@@ -49,6 +44,7 @@ public class Board extends JPanel implements Runnable, Commons {
     private Thread animator;
     private int deaths = 0;
     private boolean ingame = true;
+    private boolean isBaptiste = false;
     // -- End variables
 
     // -- Images
@@ -58,6 +54,9 @@ public class Board extends JPanel implements Runnable, Commons {
     private final String alienImage = "../assets/alien.png";
     private final String vaisseauBaptiste = "../assets/vaisseauBaptiste.png";
     private final String vaisseauJordan = "../assets/alien_fun.png";
+    private final String fond = "../assets/fond.png";
+    private ImageIcon imageFond = null;
+
     // -- End images
 
     /**
@@ -69,7 +68,6 @@ public class Board extends JPanel implements Runnable, Commons {
         setFocusable(true);
         d = new Dimension(BOARD_WIDTH, BOARD_HEIGTH);
         setBackground(Color.black);
-
         gameInit();
         setDoubleBuffered(true);
     }
@@ -88,7 +86,7 @@ public class Board extends JPanel implements Runnable, Commons {
     public void gameInit() {
         aliens = new ArrayList(); // -- Initialisation des aliens
         ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
-
+        imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
         // -- Creation des aliens
         for (int i=0; i < 4; i++) {
             for (int j=0; j < 6; j++) {
@@ -106,7 +104,7 @@ public class Board extends JPanel implements Runnable, Commons {
         }
 
         // -- Creation du boss
-        boss = new Boss(200,20);
+        boss = new Boss(200,-500);
         for(int i = 0; i <= 70 ; i++){
             System.out.println("X : "+boss.getX()+(i*5));
             machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
@@ -189,8 +187,14 @@ public class Board extends JPanel implements Runnable, Commons {
      */
     public void drawShots(Graphics g) {
         for(Shot shot : machineGun){
-            if (shot.isVisible())
-                g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
+            if (shot.isVisible()){
+                try{
+                    g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
+                }catch(Exception e ){
+                    System.out.println("Exception");
+                }
+
+            }
         }
     }
 
@@ -252,6 +256,7 @@ public class Board extends JPanel implements Runnable, Commons {
         // -- Couleur du fond
         g.setColor(Color.black);
         g.fillRect(0, 0, d.width, d.height);
+        g.drawImage(imageFond.getImage(), 0,0, this);
         g.setColor(Color.green);
         Calendar actualCalendar =  Calendar.getInstance();
 
@@ -304,6 +309,26 @@ public class Board extends JPanel implements Runnable, Commons {
                 BOARD_WIDTH/2);
     }
 
+    public void printMessage(String message){
+        Graphics g = this.getGraphics();
+
+        g.setColor(Color.black);
+        g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGTH);
+
+        g.setColor(new Color(0, 32, 48));
+        g.fillRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
+        g.setColor(Color.white);
+        g.drawRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
+
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        FontMetrics metr = this.getFontMetrics(small);
+
+        g.setColor(Color.white);
+        g.setFont(small);
+        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message))/2,
+                BOARD_WIDTH/2);
+    }
+
     /**
      * Lance l'effet du bonus recupéré
      * @param playerX cooroonnées
@@ -328,12 +353,14 @@ public class Board extends JPanel implements Runnable, Commons {
                 alien.setImage(ii.getImage());
                 alienSpeed = 10;
             }
+
         }
         if(bonus.getMode() == 3){
             ImageIcon ii = new ImageIcon(getClass().getResource(vaisseauBaptiste));
             joueur.setImage(ii.getImage());
             shootSpeed = shootSpeed * 2;
             joueur.setMoveSpeed(joueur.getMoveSpeed()+3);
+            isBaptiste = true;
         }
         bonus.die();
         bonus = new Bonus();
@@ -396,11 +423,20 @@ public class Board extends JPanel implements Runnable, Commons {
         int y = s.getY();
         y -=     10;
 
+
         if(y < 650){
-            ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
-            joueur.setImage(ii.getImage());
+            if(isBaptiste){
+                ImageIcon ii = new ImageIcon(this.getClass().getResource(vaisseauBaptiste));
+                joueur.setImage(ii.getImage());
+            }else{
+                ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
+                joueur.setImage(ii.getImage());
+            }
+
 
         }
+
+
 
         if (y < 0){
             s.die();
@@ -532,6 +568,10 @@ public class Board extends JPanel implements Runnable, Commons {
     public void lancerBossInvasion(){
         // -- On verifie si il a envahi
         int y = boss.getY();
+        System.out.println("Boss : "+y);
+        if(y < 10){
+            boss.setY(boss.getY()+3);
+        }
         if (y > GROUND - BOSS_HEIGHT) {
             ingame = false;
             message = "Invasion!";
@@ -726,8 +766,6 @@ public class Board extends JPanel implements Runnable, Commons {
             bossTirerBombe();            // -- Il tire une bombe
         }
         // -- FIN DEPLACEMENT BOSS
-
-
     }
 
     /**
@@ -736,12 +774,14 @@ public class Board extends JPanel implements Runnable, Commons {
     public void run() {
         long beforeTime, timeDiff, sleep;
         beforeTime = System.currentTimeMillis();
+
         // -- Pendant le jeu
         while (ingame) {
             // -- On redessine le board
             repaint();
             // -- Relance l'animation
             animationCycle();
+
             // -- Sleep
             timeDiff = System.currentTimeMillis() - beforeTime;
             sleep = DELAY - timeDiff;
