@@ -509,7 +509,7 @@ public class JMenuFrame extends JFrame{
 
                     JFileChooser chooser = new JFileChooser();
                     FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                            "fichiers jpg", "jpg");
+                            "fichiers png", "png");
                     chooser.setFileFilter(filter);
                     int returnVal = chooser.showOpenDialog(panel);
                     if(returnVal == JFileChooser.APPROVE_OPTION) {
