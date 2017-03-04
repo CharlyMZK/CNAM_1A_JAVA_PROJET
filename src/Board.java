@@ -1,18 +1,11 @@
-package models;
+import models.*;
 
-        import java.awt.*;
-        import java.awt.event.KeyAdapter;
-        import java.awt.event.KeyEvent;
-
-        import java.util.ArrayList;
-        import java.util.Calendar;
-        import java.util.Date;
-        import java.util.Iterator;
-        import java.util.List;
-        import java.util.Random;
-
-        import javax.swing.ImageIcon;
-        import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.*;
+import java.util.List;
 
 
 public class Board extends JPanel implements Runnable, Commons {
@@ -28,12 +21,12 @@ public class Board extends JPanel implements Runnable, Commons {
 
     // -- Sprites
     private ArrayList aliens;
-    private Joueur joueur;
+    private Joueur joueur = SpaceInvaders.getInstance().getJoueurs().get(0);
     private Boss boss;
     private Bonus bonus;
     private Shot shot;
-    private List<Shot> machineGun = new ArrayList<Shot> ();
-    private List<Bomb> machineBomb = new ArrayList<Bomb> ();
+    private List<Shot> machineGun = new ArrayList<Shot>();
+    private List<Bomb> machineBomb = new ArrayList<Bomb>();
     // -- End sprites
 
     // -- Variables
@@ -53,22 +46,21 @@ public class Board extends JPanel implements Runnable, Commons {
     // -- End variables
 
     // -- Images
-    private final String expl = "../assets/explosion.png";
-    private final String playerShip = "../assets/player.png";
-    private final String playerShooting = "../assets/playerShooting.png";
-    private final String alienImage = "../assets/alien.png";
-    private final String vaisseauBaptiste = "../assets/vaisseauBaptiste.png";
-    private final String vaisseauJordan = "../assets/alien_fun.png";
-    private final String fond = "../assets/fond.png";
-    private String hautfait = "../assets/premierePartieAchievement.png";
+    private final String expl = "assets/explosion.png";
+    private final String playerShooting = ".assets/playerShooting.png";
+    private final String alienImage = "assets/alien.png";
+    private final String vaisseauBaptiste = "assets/vaisseauBaptiste.png";
+    private final String vaisseauJordan = "assets/alien_fun.png";
+    private final String fond = "assets/fond.png";
+    private String hautfait = "assets/premierePartieAchievement.png";
     private ImageIcon imageFond = null;
     private ImageIcon imageHautfait = null;
     // -- End images
 
     /**
-     *  Constructor
+     * Constructor
      */
-    public Board(){
+    public Board() {
         addKeyListener(new TAdapter());
         setFocusable(true);
         d = new Dimension(BOARD_WIDTH, BOARD_HEIGTH);
@@ -94,25 +86,18 @@ public class Board extends JPanel implements Runnable, Commons {
         imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
         imageHautfait = new ImageIcon(this.getClass().getResource(hautfait)); // -- Image du haut fait
         // -- Creation des aliens
-        for (int i=0; i < (niveauActuel*2); i++) {
-            for (int j=0; j < 6; j++) {
-                Alien alien = new Alien(alienX + 55*j, alienY + 55*i);
+        for (int i = 0; i < (niveauActuel * 2); i++) {
+            for (int j = 0; j < 6; j++) {
+                Alien alien = new Alien(alienX + 55 * j, alienY + 55 * i);
                 alien.setImage(ii.getImage());
                 aliens.add(alien);
             }
         }
 
-        // -- Creation du joueur
-        try {
-            joueur = new Joueur("Skywalker", "luke", "bgdelespace", new ViperMKII());
-        }catch(Exception e){
-
-        }
-
         // -- Creation du boss
-        boss = new Boss(200,-500);
-        for(int i = 0; i <= 70 ; i++){
-            machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
+        boss = new Boss(200, -500);
+        for (int i = 0; i <= 70; i++) {
+            machineBomb.add(new Bomb(boss.getX() + (i * 5), boss.getY()));
         }
         // -- Creation des autre sprites
         shot = new Shot();
@@ -127,28 +112,30 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine une banniere
+     *
      * @param g graphics
      */
-    public void drawBanner(Graphics g){
+    public void drawBanner(Graphics g) {
         g.setColor(new Color(0, 32, 48));
-        g.fillRect(400, BOARD_WIDTH/2 - 30, 140, 50);
+        g.fillRect(400, BOARD_WIDTH / 2 - 30, 140, 50);
         g.setColor(Color.white);
-        g.drawRect(400, BOARD_WIDTH/2 - 30, 140, 50);
+        g.drawRect(400, BOARD_WIDTH / 2 - 30, 140, 50);
 
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = this.getFontMetrics(small);
 
         g.setColor(Color.white);
         g.setFont(small);
-        g.drawString("Niveau "+niveauActuel, (BOARD_WIDTH - metr.stringWidth(message))/2, BOARD_WIDTH/2);
+        g.drawString("Niveau " + niveauActuel, (BOARD_WIDTH - metr.stringWidth(message)) / 2, BOARD_WIDTH / 2);
 
     }
 
     /**
      * Dessine les aliens
+     *
      * @param g graphics
      */
-    public void drawAliens(Graphics g){
+    public void drawAliens(Graphics g) {
         Iterator it = aliens.iterator();
 
         while (it.hasNext()) {
@@ -166,9 +153,10 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine le boss
+     *
      * @param g graphics
      */
-    public void drawBoss(Graphics g){
+    public void drawBoss(Graphics g) {
         if (boss.isVisible()) {
             g.drawImage(boss.getImage(), boss.getX(), boss.getY(), this);
         }
@@ -180,6 +168,7 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine le joueur
+     *
      * @param g graphics
      */
     public void drawPlayer(Graphics g) {
@@ -196,6 +185,7 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine le laser tiré par le joueur
+     *
      * @param g graphics
      */
     public void drawShot(Graphics g) {
@@ -205,14 +195,15 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine les tirs créés par le bonus
+     *
      * @param g graphics
      */
     public void drawShots(Graphics g) {
-        for(Shot shot : machineGun){
-            if (shot.isVisible()){
-                try{
+        for (Shot shot : machineGun) {
+            if (shot.isVisible()) {
+                try {
                     g.drawImage(shot.getImage(), shot.getX(), shot.getY(), this);
-                }catch(Exception e ){
+                } catch (Exception e) {
                     System.out.println("Exception");
                 }
 
@@ -222,6 +213,7 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine les bombes des aliens
+     *
      * @param g graphics
      */
     public void drawBombing(Graphics g) {
@@ -247,20 +239,23 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * Dessine les bombes des aliens
+     *
      * @param g graphics
      */
     public void drawMachineBomb(Graphics g) {
         // -- Get la bombe du boss
-        if(boss.isVisible()){
-            for(Bomb b : machineBomb){
+        if (boss.isVisible()) {
+            for (Bomb b : machineBomb) {
                 if (!b.isDestroyed()) {
                     g.drawImage(b.getImage(), b.getX(), b.getY(), this);
                 }
             }
         }
     }
+
     /**
      * Dessine un bonus
+     *
      * @param g graphics
      */
     public void drawBonus(Graphics g) {
@@ -268,27 +263,31 @@ public class Board extends JPanel implements Runnable, Commons {
             g.drawImage(bonus.getImage(), bonus.getX(), bonus.getY(), this);
         }
     }
+
     /**
      * Dessine un hautfait
+     *
      * @param g graphics
      */
     public void drawHautFait(Graphics g) {
         if (hautFaitVisible) {
-            g.drawImage(imageHautfait.getImage(),BOARD_WIDTH-200, 20, this);
+            g.drawImage(imageHautfait.getImage(), BOARD_WIDTH - 200, 20, this);
         }
     }
+
     /**
      * Dessine le board
+     *
      * @param g graphics
      */
-    public void paint(Graphics g){
+    public void paint(Graphics g) {
         super.paint(g);
         // -- Couleur du fond
         g.setColor(Color.black);
         g.fillRect(0, 0, d.width, d.height);
-        g.drawImage(imageFond.getImage(), 0,0, this);
+        g.drawImage(imageFond.getImage(), 0, 0, this);
         g.setColor(Color.green);
-        Calendar actualCalendar =  Calendar.getInstance();
+        Calendar actualCalendar = Calendar.getInstance();
 
         if (ingame) {
 
@@ -297,15 +296,15 @@ public class Board extends JPanel implements Runnable, Commons {
             drawAliens(g);
             Date actualDate = new Date();
             System.out.println();
-            if(bannerVisible){
+            if (bannerVisible) {
                 drawBanner(g);
-                if( ( (actualDate.getTime()-hautFaitCalendar.getTime().getTime()) / 1000) == 2){
+                if (((actualDate.getTime() - hautFaitCalendar.getTime().getTime()) / 1000) == 2) {
                     bannerVisible = false;
                 }
             }
-            if(hautFaitVisible){
+            if (hautFaitVisible) {
                 drawHautFait(g);
-                if( ( (actualDate.getTime()-niveauCalendar.getTime().getTime()) / 1000) == 3){
+                if (((actualDate.getTime() - niveauCalendar.getTime().getTime()) / 1000) == 3) {
                     hautFaitVisible = false;
                 }
             }
@@ -319,10 +318,10 @@ public class Board extends JPanel implements Runnable, Commons {
             drawBonus(g);
 
             // -- Affichage periodique des bonus
-            if( (actualCalendar.get(Calendar.SECOND)%4)  == 0){
-               bonus.setVisible(true);
+            if ((actualCalendar.get(Calendar.SECOND) % 4) == 0) {
+                bonus.setVisible(true);
             }
-            if((actualCalendar.get(Calendar.SECOND)%8)  == 0){
+            if ((actualCalendar.get(Calendar.SECOND) % 8) == 0) {
                 bonus.die();
             }
         }
@@ -333,42 +332,43 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Affichage du Game over
      */
-    public void gameOver(){
+    public void gameOver() {
         Graphics g = this.getGraphics();
 
         g.setColor(Color.black);
         g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGTH);
 
         g.setColor(new Color(0, 32, 48));
-        g.fillRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
+        g.fillRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
         g.setColor(Color.white);
-        g.drawRect(50, BOARD_WIDTH/2 - 30, BOARD_WIDTH-100, 50);
+        g.drawRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
 
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = this.getFontMetrics(small);
 
         g.setColor(Color.white);
         g.setFont(small);
-        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message))/2,
-                BOARD_WIDTH/2);
+        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message)) / 2,
+                BOARD_WIDTH / 2);
     }
 
     /**
      * Lance l'effet du bonus recupéré
+     *
      * @param playerX cooroonnées
      * @param playerY cooroonnées
      */
-    public void lancerEffetBonus(int playerX, int playerY){
-        if(bonus.getMode() == 1){
+    public void lancerEffetBonus(int playerX, int playerY) {
+        if (bonus.getMode() == 1) {
             ImageIcon ii = new ImageIcon(getClass().getResource(expl));
             joueur.setImage(ii.getImage());
 
             playerX = playerX - 30;
-            for(int i = 0; i <= 50 ; i++){
-                machineGun.add(new Shot(playerX+(i*5),playerY));
+            for (int i = 0; i <= 50; i++) {
+                machineGun.add(new Shot(playerX + (i * 5), playerY));
             }
         }
-        if(bonus.getMode() == 2){
+        if (bonus.getMode() == 2) {
             Iterator it = aliens.iterator();
             while (it.hasNext()) {
                 Alien alien = (Alien) it.next();
@@ -379,11 +379,11 @@ public class Board extends JPanel implements Runnable, Commons {
             }
 
         }
-        if(bonus.getMode() == 3){
+        if (bonus.getMode() == 3) {
             ImageIcon ii = new ImageIcon(getClass().getResource(vaisseauBaptiste));
             joueur.setImage(ii.getImage());
             shootSpeed = shootSpeed * 2;
-            joueur.setMoveSpeed(joueur.getMoveSpeed()+3);
+            joueur.setMoveSpeed(joueur.getMoveSpeed() + 3);
             isBaptiste = true;
         }
         bonus.die();
@@ -393,30 +393,30 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * On verifie si le jeu est fini
      */
-    public void verificationFinJeu(){
+    public void verificationFinJeu() {
         Iterator alienDeadIterator = aliens.iterator();
-        int deadCounter=0;
+        int deadCounter = 0;
         while (alienDeadIterator.hasNext()) {
             Alien alien = (Alien) alienDeadIterator.next();
-            if(alien.isDying()){
+            if (alien.isDying()) {
                 deadCounter++;
             }
         }
 
-        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY*niveauActuel)){
+        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY * niveauActuel)) {
             System.out.println("BOSS APPEARS");
             boss.setVisible(true);
         }
 
-        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY*niveauActuel) && boss.isDying()) {
+        if (deadCounter == (NUMBER_OF_ALIENS_TO_DESTROY * niveauActuel) && boss.isDying()) {
             System.out.println("WIN");
 
-            if(niveauActuel == 7 ){
+            if (niveauActuel == 7) {
                 ingame = false;
                 message = "Game won!";
-            }else{
+            } else {
                 niveauActuel++;
-                hautfait = "../assets/niveau"+niveauActuel+"Achievement.png";
+                hautfait = "../assets/niveau" + niveauActuel + "Achievement.png";
                 hautFaitVisible = true;
                 Date dateActuelle = new Date();
                 hautFaitCalendar.setTime(dateActuelle);
@@ -429,9 +429,10 @@ public class Board extends JPanel implements Runnable, Commons {
 
     /**
      * On verifie si l'alien est touché par un laser
+     *
      * @param s le laser
      */
-    public void verificationAlienTouche(Shot s){
+    public void verificationAlienTouche(Shot s) {
         Iterator it = aliens.iterator();
         int shotX = s.getX();
         int shotY = s.getY();
@@ -445,7 +446,7 @@ public class Board extends JPanel implements Runnable, Commons {
                 if (shotX >= (alienX) &&
                         shotX <= (alienX + ALIEN_WIDTH) &&
                         shotY >= (alienY) &&
-                        shotY <= (alienY+ALIEN_HEIGHT) ) {
+                        shotY <= (alienY + ALIEN_HEIGHT)) {
                     ImageIcon ii =
                             new ImageIcon(getClass().getResource(expl));
                     alien.setImage(ii.getImage());
@@ -457,15 +458,15 @@ public class Board extends JPanel implements Runnable, Commons {
         }
 
         int y = s.getY();
-        y -=     10;
+        y -= 10;
 
 
-        if(y < 650){
-            if(isBaptiste){
+        if (y < 650) {
+            if (isBaptiste) {
                 ImageIcon ii = new ImageIcon(this.getClass().getResource(vaisseauBaptiste));
                 joueur.setImage(ii.getImage());
-            }else{
-                ImageIcon ii = new ImageIcon(this.getClass().getResource(playerShip));
+            } else {
+                ImageIcon ii = new ImageIcon(SpaceInvaders.getInstance().getJoueurs().get(0).getImage());
                 joueur.setImage(ii.getImage());
             }
 
@@ -473,19 +474,18 @@ public class Board extends JPanel implements Runnable, Commons {
         }
 
 
-
-        if (y < 0){
+        if (y < 0) {
             s.die();
 
-        }
-        else s.setY(y);
+        } else s.setY(y);
     }
 
     /**
      * On verifie si le boss est touché par un laser
+     *
      * @param s le laser
      */
-    public void verificationBossTouche(Shot s){
+    public void verificationBossTouche(Shot s) {
         int shotX = s.getX();
         int shotY = s.getY();
         int bossX = boss.getX();
@@ -493,7 +493,7 @@ public class Board extends JPanel implements Runnable, Commons {
         if (shotX >= (bossX) &&
                 shotX <= (bossX + BOSS_WIDTH) &&
                 shotY >= (bossY) &&
-                shotY <= (bossY+BOSS_HEIGHT) ) {
+                shotY <= (bossY + BOSS_HEIGHT)) {
 
 
             // -- Comptage des points de vie
@@ -505,15 +505,15 @@ public class Board extends JPanel implements Runnable, Commons {
             System.out.println("// -- Vie de l'alien apres : ");
             System.out.println(boss.getVaisseau().getPointsBouclierActuel());
             System.out.println(boss.getVaisseau().getPointsStructureActuel());
-            System.out.println("Il est mort : "+boss.getVaisseau().isDetruit());
+            System.out.println("Il est mort : " + boss.getVaisseau().isDetruit());
             System.out.println("// ------------------------------");
             // --
-            if(boss.getVaisseau().isDetruit()){
+            if (boss.getVaisseau().isDetruit()) {
                 ImageIcon ii = new ImageIcon(getClass().getResource(expl));
                 boss.setImage(ii.getImage());
                 boss.setDying(true);
                 deaths++;
-                for(Bomb b : machineBomb){
+                for (Bomb b : machineBomb) {
                     b.setDying(true);
                 }
                 machineBomb.clear();
@@ -526,14 +526,14 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * On verifie si l'alien touche le bord
      */
-    public void verificationAlienCollision(){
+    public void verificationAlienCollision() {
         Iterator aliensMouvementIterator = aliens.iterator();
 
         while (aliensMouvementIterator.hasNext()) {
             Alien alien = (Alien) aliensMouvementIterator.next();
             int x = alien.getX();
             // -- Si l'alien touche le bord il descend
-            if (x  >= BOARD_WIDTH - BORDER_RIGHT && direction != -alienSpeed) {
+            if (x >= BOARD_WIDTH - BORDER_RIGHT && direction != -alienSpeed) {
                 direction = -alienSpeed;
                 Iterator i1 = aliens.iterator();
                 while (i1.hasNext()) {
@@ -547,7 +547,7 @@ public class Board extends JPanel implements Runnable, Commons {
 
                 Iterator i2 = aliens.iterator();
                 while (i2.hasNext()) {
-                    Alien a = (Alien)i2.next();
+                    Alien a = (Alien) i2.next();
                     a.setY(a.getY() + GO_DOWN);
                 }
             }
@@ -559,10 +559,10 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * On verifie si le boss touche le bord
      */
-    public void verificationBossCollision(){
+    public void verificationBossCollision() {
         int x = boss.getX();
 
-        if (x  >= BOARD_WIDTH - BORDER_RIGHT && directionBoss != -5) {
+        if (x >= BOARD_WIDTH - BORDER_RIGHT && directionBoss != -5) {
             directionBoss = -5;
             boss.setY(boss.getY() + GO_DOWN);
 
@@ -577,7 +577,7 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Les aliens avancent
      */
-    public void lancerInvasion(){
+    public void lancerInvasion() {
 
         Iterator alienInvasionIterator = aliens.iterator();
         // -- Pour chaque alien
@@ -601,11 +601,11 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Le boss avance
      */
-    public void lancerBossInvasion(){
+    public void lancerBossInvasion() {
         // -- On verifie si il a envahi
         int y = boss.getY();
-        if(y < 10){
-            boss.setY(boss.getY()+3);
+        if (y < 10) {
+            boss.setY(boss.getY() + 3);
         }
         if (y > GROUND - BOSS_HEIGHT) {
             ingame = false;
@@ -617,24 +617,22 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Le boss tire une bombe
      */
-    public void bossTirerBombe(){
+    public void bossTirerBombe() {
         Boolean bombesDetruites = true;
-        for(Bomb b : machineBomb){
-            if(!b.isDestroyed()){
+        for (Bomb b : machineBomb) {
+            if (!b.isDestroyed()) {
                 bombesDetruites = false;
             }
         }
-        if(bombesDetruites){
+        if (bombesDetruites) {
             machineBomb.clear();
-            for(int i = 0; i <= 70 ; i++){
-                machineBomb.add(new Bomb(boss.getX()+(i*5),boss.getY()));
+            for (int i = 0; i <= 70; i++) {
+                machineBomb.add(new Bomb(boss.getX() + (i * 5), boss.getY()));
             }
         }
 
 
-
-
-        for(Bomb b : machineBomb){
+        for (Bomb b : machineBomb) {
             if (boss.isVisible() && b.isDestroyed()) {
                 b.setDestroyed(false);
             }
@@ -645,12 +643,12 @@ public class Board extends JPanel implements Runnable, Commons {
 
             if (joueur.isVisible() && !b.isDestroyed()) {
 
-                if ( bombX >= (playerX) && bombX <= (playerX+PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY+PLAYER_HEIGHT) ) {
+                if (bombX >= (playerX) && bombX <= (playerX + PLAYER_WIDTH) && bombY >= (playerY) && bombY <= (playerY + PLAYER_HEIGHT)) {
 
                     // -- Comptage des points de vie
                     boss.getVaisseau().attaque(joueur.getMonVaisseau());
 
-                    if(joueur.getMonVaisseau().isDetruit()){
+                    if (joueur.getMonVaisseau().isDetruit()) {
                         ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
@@ -672,7 +670,7 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Les aliens tire leurs bombes
      */
-    public void alienTirerBombe(){
+    public void alienTirerBombe() {
         Iterator alienIterator = aliens.iterator();
         Random generator = new Random();
 
@@ -693,10 +691,10 @@ public class Board extends JPanel implements Runnable, Commons {
             int playerY = joueur.getY();
 
             if (joueur.isVisible() && !b.isDestroyed()) {
-                if ( bombX >= (playerX) &&
-                        bombX <= (playerX+PLAYER_WIDTH) &&
+                if (bombX >= (playerX) &&
+                        bombX <= (playerX + PLAYER_WIDTH) &&
                         bombY >= (playerY) &&
-                        bombY <= (playerY+PLAYER_HEIGHT) ) {
+                        bombY <= (playerY + PLAYER_HEIGHT)) {
 
                     // -- Comptage des points de vie
                     System.out.println("// ------------------------------");
@@ -707,10 +705,10 @@ public class Board extends JPanel implements Runnable, Commons {
                     System.out.println("// -- Vie de l'alien apres : ");
                     System.out.println(joueur.getMonVaisseau().getPointsBouclierActuel());
                     System.out.println(joueur.getMonVaisseau().getPointsStructureActuel());
-                    System.out.println("Il est mort : "+joueur.getMonVaisseau().isDetruit());
+                    System.out.println("Il est mort : " + joueur.getMonVaisseau().isDetruit());
                     System.out.println("// ------------------------------");
                     // --
-                    if(joueur.getMonVaisseau().isDetruit()){
+                    if (joueur.getMonVaisseau().isDetruit()) {
                         ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
@@ -731,10 +729,10 @@ public class Board extends JPanel implements Runnable, Commons {
     /**
      * Le joueur tire un laser
      */
-    public void joueurTirerLaser(){
+    public void joueurTirerLaser() {
         // -- Si on a hit le bonus machineGun, on verifie si les aliens sont touchés par nos lasers
-        if(machineGun.size() > 0){
-            for(Shot s : machineGun){
+        if (machineGun.size() > 0) {
+            for (Shot s : machineGun) {
                 if (s.isVisible()) {
                     verificationAlienTouche(s);
                 }
@@ -745,12 +743,13 @@ public class Board extends JPanel implements Runnable, Commons {
         // Traitement du tir du joueur
         if (shot.isVisible()) {
             verificationAlienTouche(shot);
-            if(boss.isVisible()){
+            if (boss.isVisible()) {
                 verificationBossTouche(shot);
             }
             shot.move(shootSpeed);
         }
     }
+
     /**
      * Cycle periodique de l'animation en jeu
      */
@@ -771,8 +770,8 @@ public class Board extends JPanel implements Runnable, Commons {
             int playerY = joueur.getY();
 
             if (bonus.isVisible() && joueur.isVisible()) {
-                if (bonusX >= (playerX) && bonusX <= (playerX + PLAYER_WIDTH) && bonuxY >= (playerY) && bonuxY <= (playerY+PLAYER_HEIGHT) ) {
-                    lancerEffetBonus(playerX,playerY);
+                if (bonusX >= (playerX) && bonusX <= (playerX + PLAYER_WIDTH) && bonuxY >= (playerY) && bonuxY <= (playerY + PLAYER_HEIGHT)) {
+                    lancerEffetBonus(playerX, playerY);
                 }
             }
         }
@@ -794,7 +793,7 @@ public class Board extends JPanel implements Runnable, Commons {
         // -- FIN DEPLACEMENT ALIENS
 
         // -- DEPLACEMENT BOSS
-        if(boss.isVisible()){
+        if (boss.isVisible()) {
             verificationBossCollision(); // -- On verifie si il touche le bord
             lancerBossInvasion();        // -- On déplace le boss
             bossTirerBombe();            // -- Il tire une bombe
@@ -847,8 +846,7 @@ public class Board extends JPanel implements Runnable, Commons {
             int x = joueur.getX();
             int y = joueur.getY();
 
-            if (ingame)
-            {
+            if (ingame) {
                 // -- Si on press la fleche du haut : tir
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     if (!shot.isVisible())

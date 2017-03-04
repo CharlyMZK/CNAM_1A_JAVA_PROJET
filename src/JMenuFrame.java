@@ -20,6 +20,7 @@ public class JMenuFrame extends JFrame{
     private JMenu menuVaisseaux;
     private JMenu menuArmurerie;
 
+    private SpaceInvaders jeu = SpaceInvaders.getInstance();
 
     private JMenuItem itemCreationJoueur;
     private JMenuItem itemSupressionJoueur;
@@ -41,8 +42,9 @@ public class JMenuFrame extends JFrame{
     private JButton deletePlayerButton;
     private JButton createPlayerButton;
     private JPanel vaisseauPanel;
+    private JButton launchGame;
 
-    public JMenuFrame(SpaceInvaders jeu) {
+    public JMenuFrame() {
 
         // -- Menu bar
         menuBar = new JMenuBar();
@@ -517,6 +519,7 @@ public class JMenuFrame extends JFrame{
                     joueurChoisi.getMonVaisseau().setImage(chooser.getSelectedFile().getPath());
                     Vaisseau vaisseauJoueur = joueurChoisi.getMonVaisseau();
                     String image = vaisseauJoueur.getImage();
+                    joueurChoisi.setVaisseauImage();
 
                     System.out.println("la val selectionnée es t: "+playerList.getSelectedValue());
 
@@ -620,6 +623,13 @@ public class JMenuFrame extends JFrame{
                 jeu.supprimerJoueurAvecPseudo(pseudo);
                 // -- Update de la liste
                 updateListPlayers(jeu);
+            }
+        });
+
+        launchGame.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ArcadeFrame();
             }
         });
 

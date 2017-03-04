@@ -8,51 +8,60 @@ import models.*;
 public class SpaceInvaders {
 	private ArrayList<Joueur> joueurs;
 	private ArrayList<Vaisseau> ennemis;
-
 	/**
 	 * Class constructor
 	 */
-	private SpaceInvaders() throws ArmurerieException {
+	private SpaceInvaders() {
 		init();
 	}
+
+    /** Instance unique pré-initialisée */
+    private static SpaceInvaders INSTANCE = new SpaceInvaders();
+
+    /** Point d'accès pour l'instance unique du singleton */
+    public static SpaceInvaders getInstance()
+    {	return INSTANCE;
+    }
+
 	/**
 	 * Main function
 	 * @param args string array
 	 */
-	public static void main(String[] args) throws ArmurerieException {
-		new ArcadeFrame();
-
+	public static void main(String[] args) {
 		// -- Initialisation basique
-		/*System.out.println("\n-------- INITIALISATION DU JEU ------------");
+		System.out.println("\n-------- INITIALISATION DU JEU ------------");
 
 		SpaceInvaders jeu = new SpaceInvaders();
 		IhmSpaceInvaders ihm = new IhmSpaceInvaders();
-		ihm.createAndShowGUI(jeu);
-		//Armurerie.getInstance().statistiques();
-		JMenuFrame gameFrame = new JMenuFrame(jeu);*/
+		ihm.createAndShowGUI();
+		Armurerie.getInstance().statistiques();
+		JMenuFrame gameFrame = new JMenuFrame();
 	}
 	/**
 	 * Initialise le jeu en créeant des joueurs
 	 */
-	private void init() throws ArmurerieException {
-		System.out.println("[SpaceInvaders] init lancé ");
-		// -- Initialisation des joueurs
-		joueurs = new ArrayList<>();
-		Joueur luke = new Joueur("Skywalker","luke","bgdelespace", new ViperMKII());
-		joueurs.add(luke);
-		// -- Initialisation des ennemis
-		ennemis = new ArrayList<>();
-		Assault assault = new Assault();
-		Dart dart = new Dart();
-		Alkesh alk = new Alkesh();
-		Slavel slavel = new Slavel();
-		Tardis tardis = new Tardis();
-		ennemis.add(assault);
-		ennemis.add(dart);
-		ennemis.add(alk);
-		//ennemis.add(slavel);
-		ennemis.add(tardis);
-
+	private void init() {
+		try{
+            System.out.println("[SpaceInvaders] init lancé ");
+            // -- Initialisation des joueurs
+            joueurs = new ArrayList<>();
+            Joueur luke = new Joueur("Skywalker","luke","HondaCivic-TypeR", new ViperMKII());
+            joueurs.add(luke);
+            // -- Initialisation des ennemis
+            ennemis = new ArrayList<>();
+            Assault assault = new Assault();
+            Dart dart = new Dart();
+            Alkesh alk = new Alkesh();
+            Slavel slavel = new Slavel();
+            Tardis tardis = new Tardis();
+            ennemis.add(assault);
+            ennemis.add(dart);
+            ennemis.add(alk);
+            //ennemis.add(slavel);
+            ennemis.add(tardis);
+        } catch (ArmurerieException a){
+		    a.printStackTrace();
+        }
 	}
 
 

@@ -1,4 +1,3 @@
-import models.Board;
 import models.Commons;
 
 import javax.swing.*;
@@ -12,7 +11,7 @@ public class ArcadeFrame extends JFrame implements Commons {
         {
             add(new Board());
             setTitle("Space Invaders");
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             setSize(BOARD_WIDTH, BOARD_HEIGTH);
             setLocationRelativeTo(null);
             setVisible(true);
