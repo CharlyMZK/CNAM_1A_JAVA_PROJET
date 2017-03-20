@@ -1,9 +1,12 @@
 import models.*;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -58,8 +61,8 @@ public class Board extends JPanel implements Runnable, Commons {
     // -- End images
 
     // -- Sons
-    private final String sonExplosion = "assets/explosion.wav";
-    private final String sonTire = "assets/shot.wav";
+    private final String sonExplosion = "src/assets/explosion.wav";
+    private final String sonTire = "src/assets/shot.wav";
     // -- End sons
 
     /**
@@ -854,6 +857,7 @@ public class Board extends JPanel implements Runnable, Commons {
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     if (!shot.isVisible()) {
                         shot = new Shot(x, y);
+                        jouerSon(sonTire);
                     }
 
                 }
@@ -878,6 +882,22 @@ public class Board extends JPanel implements Runnable, Commons {
                     gameInit();
                 }
             }
+        }
+    }
+
+    // Permet de jouer un son
+    private void jouerSon(String chemin){
+        try {
+            File soundFile = new File(chemin); //you could also get the sound file with an URL
+            System.out.println(soundFile.getCanonicalPath());
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            // Get a sound clip resource.
+            Clip clip = AudioSystem.getClip();
+            // Open audio clip and load samples from the audio input stream.
+            clip.open(audioIn);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
