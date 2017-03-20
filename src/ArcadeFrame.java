@@ -7,15 +7,21 @@ import javax.swing.*;
  */
 public class ArcadeFrame extends JFrame implements Commons {
 
-        public ArcadeFrame()
-        {
-            add(new Board());
-            setTitle("Space Invaders");
-            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            setSize(BOARD_WIDTH, BOARD_HEIGTH);
-            setLocationRelativeTo(null);
-            setVisible(true);
-            setResizable(false);
-        }
+    public ArcadeFrame() {
+        Board board = new Board();
+        add(board);
+        setTitle("Mraled Space Project");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                board.setIngame(false);
+            }
+        });
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setSize(BOARD_WIDTH, BOARD_HEIGTH);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setResizable(false);
+    }
 
 }

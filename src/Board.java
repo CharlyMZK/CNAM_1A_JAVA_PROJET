@@ -1,12 +1,13 @@
 import models.*;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -61,8 +62,9 @@ public class Board extends JPanel implements Runnable, Commons {
     // -- End images
 
     // -- Sons
-    private final String sonExplosion = "src/assets/explosion.wav";
     private final String sonTire = "src/assets/shot.wav";
+    private final String sonFond = "src/assets/fond.wav";
+    private Clip clipfond;
     // -- End sons
 
     /**
@@ -89,6 +91,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Initalise le jeu
      */
     public void gameInit() {
+        musicDeFond();
         aliens = new ArrayList(); // -- Initialisation des aliens
         ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
         imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
@@ -340,6 +343,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Affichage du Game over
      */
     public void gameOver() {
+        clipfond.stop();
         Graphics g = this.getGraphics();
 
         g.setColor(Color.black);
@@ -855,9 +859,9 @@ public class Board extends JPanel implements Runnable, Commons {
             if (ingame) {
                 // -- Si on press la fleche du haut : tir
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    jouerSon(sonTire);
                     if (!shot.isVisible()) {
                         shot = new Shot(x, y);
-                        jouerSon(sonTire);
                     }
 
                 }
@@ -886,11 +890,9 @@ public class Board extends JPanel implements Runnable, Commons {
     }
 
     // Permet de jouer un son
-    private void jouerSon(String chemin){
+    private void jouerSon(String chemin) {
         try {
-            File soundFile = new File(chemin); //you could also get the sound file with an URL
-            System.out.println(soundFile.getCanonicalPath());
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(new File(chemin));
             // Get a sound clip resource.
             Clip clip = AudioSystem.getClip();
             // Open audio clip and load samples from the audio input stream.
@@ -899,5 +901,21 @@ public class Board extends JPanel implements Runnable, Commons {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Permet de jouer la musique en background
+    private void musicDeFond() {
+        try {
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(sonFond));
+            clipfond = AudioSystem.getClip();
+            clipfond.open(inputStream);
+            clipfond.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    public void setIngame(boolean ingame) {
+        this.ingame = ingame;
     }
 }

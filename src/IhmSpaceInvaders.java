@@ -18,10 +18,10 @@ public class IhmSpaceInvaders {
     private static SpaceInvaders jeu = SpaceInvaders.getInstance();
 
     public static void createAndShowGUI(){
-        JFrame frame = new JFrame("HelloWorldSwing");
+        JFrame frame = new JFrame("Mraled Space Project");
         frame.setSize(500,500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JLabel label = new JLabel("SPACE INVADER");
+        JLabel label = new JLabel("Mraled Space Project");
         JTextArea infoTextArea = new JTextArea();
         infoTextArea.setEditable(false);
         // -- Menu declaration
@@ -423,6 +423,6 @@ public class IhmSpaceInvaders {
         label.setSize(20, 20);
         frame.getContentPane().add(BorderLayout.NORTH,panelInfo);
 
-       // frame.setVisible(true);
+        // frame.setVisible(true);
     }
 }
