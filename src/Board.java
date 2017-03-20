@@ -1,9 +1,5 @@
 import models.*;
-import sun.applet.Main;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -304,7 +300,6 @@ public class Board extends JPanel implements Runnable, Commons {
             g.drawLine(0, GROUND, BOARD_WIDTH, GROUND);
             drawAliens(g);
             Date actualDate = new Date();
-            System.out.println();
             if (bannerVisible) {
                 drawBanner(g);
                 if (((actualDate.getTime() - hautFaitCalendar.getTime().getTime()) / 1000) == 2) {
@@ -371,7 +366,6 @@ public class Board extends JPanel implements Runnable, Commons {
         if (bonus.getMode() == 1) {
             ImageIcon ii = new ImageIcon(getClass().getResource(expl));
             joueur.setImage(ii.getImage());
-            jouerSon(sonExplosion);
             playerX = playerX - 30;
             for (int i = 0; i <= 50; i++) {
                 machineGun.add(new Shot(playerX + (i * 5), playerY));
@@ -425,7 +419,7 @@ public class Board extends JPanel implements Runnable, Commons {
                 message = "Game won!";
             } else {
                 niveauActuel++;
-                hautfait = "../assets/niveau" + niveauActuel + "Achievement.png";
+                hautfait = "assets/niveau" + niveauActuel + "Achievement.png";
                 hautFaitVisible = true;
                 Date dateActuelle = new Date();
                 hautFaitCalendar.setTime(dateActuelle);
@@ -460,7 +454,6 @@ public class Board extends JPanel implements Runnable, Commons {
                             new ImageIcon(getClass().getResource(expl));
                     alien.setImage(ii.getImage());
                     alien.setDying(true);
-                    jouerSon(sonExplosion);
                     deaths++;
                     shot.die();
                 }
@@ -522,7 +515,6 @@ public class Board extends JPanel implements Runnable, Commons {
                 ImageIcon ii = new ImageIcon(getClass().getResource(expl));
                 boss.setImage(ii.getImage());
                 boss.setDying(true);
-                jouerSon(sonExplosion);
                 deaths++;
                 for (Bomb b : machineBomb) {
                     b.setDying(true);
@@ -663,7 +655,6 @@ public class Board extends JPanel implements Runnable, Commons {
                         ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
-                        jouerSon(sonExplosion);
                     }
                     b.setDestroyed(true);
                 }
@@ -724,7 +715,6 @@ public class Board extends JPanel implements Runnable, Commons {
                         ImageIcon ii = new ImageIcon(this.getClass().getResource(expl));
                         joueur.setImage(ii.getImage());
                         joueur.setDying(true);
-                        jouerSon(sonExplosion);
                     }
                     b.setDestroyed(true);
                 }
@@ -864,7 +854,6 @@ public class Board extends JPanel implements Runnable, Commons {
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     if (!shot.isVisible()) {
                         shot = new Shot(x, y);
-                        jouerSon(sonTire);
                     }
 
                 }
@@ -890,23 +879,5 @@ public class Board extends JPanel implements Runnable, Commons {
                 }
             }
         }
-    }
-
-    public static synchronized void jouerSon(final String url) {
-        new Thread(new Runnable() {
-            // The wrapper thread is unnecessary, unless it blocks on the
-            // Clip finishing; see comments.
-            public void run() {
-                try {
-                    Clip clip = AudioSystem.getClip();
-                    AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-                            Main.class.getResourceAsStream(url));
-                    clip.open(inputStream);
-                    clip.start();
-                } catch (Exception e) {
-                    System.err.println(e.getMessage());
-                }
-            }
-        }).start();
     }
 }
