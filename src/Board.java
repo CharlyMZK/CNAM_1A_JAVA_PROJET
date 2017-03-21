@@ -64,7 +64,7 @@ public class Board extends JPanel implements Runnable, Commons {
     // -- Sons
     private final String sonTire = "src/assets/shot.wav";
     private final String sonFond = "src/assets/fond.wav";
-    private Clip clipfond;
+    private Clip clipFond = null;
     // -- End sons
 
     /**
@@ -91,7 +91,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Initalise le jeu
      */
     public void gameInit() {
-        musicDeFond();
+        musicDeFond(1);
         aliens = new ArrayList(); // -- Initialisation des aliens
         ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
         imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
@@ -343,7 +343,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Affichage du Game over
      */
     public void gameOver() {
-        clipfond.stop();
+        musicDeFond(0);
         Graphics g = this.getGraphics();
 
         g.setColor(Color.black);
@@ -904,15 +904,27 @@ public class Board extends JPanel implements Runnable, Commons {
     }
 
     // Permet de jouer la musique en background
-    private void musicDeFond() {
+    private void musicDeFond(int mode) {
         try {
             AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(sonFond));
-            clipfond = AudioSystem.getClip();
-            clipfond.open(inputStream);
-            clipfond.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            if (clipFond == null) {
+                clipFond = AudioSystem.getClip();
+            }
+
+            if (mode == 1) {
+                try {
+                    clipFond.open(inputStream);
+                    clipFond.loop(Clip.LOOP_CONTINUOUSLY);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else {
+                clipFond.stop();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+
     }
 
     public void setIngame(boolean ingame) {
