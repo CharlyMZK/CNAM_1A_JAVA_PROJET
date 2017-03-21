@@ -65,6 +65,7 @@ public class Board extends JPanel implements Runnable, Commons {
     private final String sonTire = "src/assets/shot.wav";
     private final String sonFond = "src/assets/fond.wav";
     private Clip clipFond = null;
+    private AudioInputStream inputStreamTire;
     // -- End sons
 
     /**
@@ -91,7 +92,7 @@ public class Board extends JPanel implements Runnable, Commons {
      * Initalise le jeu
      */
     public void gameInit() {
-        musicDeFond(1);
+        musiqueDeFond(1);
         aliens = new ArrayList(); // -- Initialisation des aliens
         ImageIcon ii = new ImageIcon(this.getClass().getResource(alienImage)); // -- Image des aliens
         imageFond = new ImageIcon(this.getClass().getResource(fond)); // -- Image du fond
@@ -343,24 +344,25 @@ public class Board extends JPanel implements Runnable, Commons {
      * Affichage du Game over
      */
     public void gameOver() {
-        musicDeFond(0);
+        musiqueDeFond(0);
         Graphics g = this.getGraphics();
+        if (g != null) {
+            g.setColor(Color.black);
+            g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGTH);
 
-        g.setColor(Color.black);
-        g.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGTH);
+            g.setColor(new Color(0, 32, 48));
+            g.fillRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
+            g.setColor(Color.white);
+            g.drawRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
 
-        g.setColor(new Color(0, 32, 48));
-        g.fillRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
-        g.setColor(Color.white);
-        g.drawRect(50, BOARD_WIDTH / 2 - 30, BOARD_WIDTH - 100, 50);
+            Font small = new Font("Helvetica", Font.BOLD, 14);
+            FontMetrics metr = this.getFontMetrics(small);
 
-        Font small = new Font("Helvetica", Font.BOLD, 14);
-        FontMetrics metr = this.getFontMetrics(small);
-
-        g.setColor(Color.white);
-        g.setFont(small);
-        g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message)) / 2,
-                BOARD_WIDTH / 2);
+            g.setColor(Color.white);
+            g.setFont(small);
+            g.drawString(message, (BOARD_WIDTH - metr.stringWidth(message)) / 2,
+                    BOARD_WIDTH / 2);
+        }
     }
 
     /**
@@ -859,8 +861,8 @@ public class Board extends JPanel implements Runnable, Commons {
             if (ingame) {
                 // -- Si on press la fleche du haut : tir
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    jouerSon(sonTire);
                     if (!shot.isVisible()) {
+                        jouerSon();
                         shot = new Shot(x, y);
                     }
 
@@ -890,27 +892,25 @@ public class Board extends JPanel implements Runnable, Commons {
     }
 
     // Permet de jouer un son
-    private void jouerSon(String chemin) {
+    private void jouerSon() {
         try {
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(new File(chemin));
-            // Get a sound clip resource.
+            inputStreamTire = AudioSystem.getAudioInputStream(new File(sonTire));
             Clip clip = AudioSystem.getClip();
-            // Open audio clip and load samples from the audio input stream.
-            clip.open(audioIn);
+            clip.open(inputStreamTire);
             clip.start();
+            clip.loop(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // Permet de jouer la musique en background
-    private void musicDeFond(int mode) {
+    private void musiqueDeFond(int mode) {
         try {
             AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(sonFond));
             if (clipFond == null) {
                 clipFond = AudioSystem.getClip();
             }
-
             if (mode == 1) {
                 try {
                     clipFond.open(inputStream);
