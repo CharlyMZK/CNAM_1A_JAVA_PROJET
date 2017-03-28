@@ -373,8 +373,6 @@ public class Board extends JPanel implements Runnable, Commons {
      */
     public void lancerEffetBonus(int playerX, int playerY) {
         if (bonus.getMode() == 1) {
-            ImageIcon ii = new ImageIcon(getClass().getResource(expl));
-            joueur.setImage(ii.getImage());
             playerX = playerX - 30;
             for (int i = 0; i <= 50; i++) {
                 machineGun.add(new Shot(playerX + (i * 5), playerY));
